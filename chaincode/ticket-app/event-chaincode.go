@@ -30,6 +30,9 @@ type Ticket struct {
 	TimeStamp    int    `json:"timeStamp"`
 	IsRedeemed   bool   `json:"isRedeemed"`
 }
+type Info struct {
+	number int `json:"number"`
+}
 
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
@@ -73,16 +76,16 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 		eventAsBytes, _ := json.Marshal(events[j])
 		APIstub.PutState("EVENT"+strconv.Itoa(events[j].ID), eventAsBytes)
 		for i := 0; i < events[j].Total; i++ {
-			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + i, Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, time.Now(), false}
+			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + strconv.Itoa(i), Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, time.Now(), false}
 
 			ticketAsBytes, _ := json.Marshal(ticket)
 			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
 		}
 		j = j + 1
 	}
-	var number int
-	number = 5
-	APIstub.PutState("NUMBER_EVENTS", strconv.Itoa(number))
+	var info = Info{}
+	info.number = 5
+	APIstub.PutState("NUMBER_EVENTS", info)
 	return shim.Success(nil)
 }
 func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -115,9 +118,11 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	return shim.Success(nil)
 }
 func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	var number int
+	var info = Info{}
 	numberAsBytes, _ = APIstub.GetState("NUMBER_EVENTS")
-	json.Unmarshal(numberAsBytes, &number)
+
+	json.Unmarshal(numberAsBytes, &info)
+	var number = info.number
 	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: args[3], Sold: 0}
 	for i := 0; i < event.Total; i++ {
 		var ticket = Ticket{EventId: event.ID, TicketId: event.ID + "-" + i, Cost: event.Price, CurrentOwner: "N/A", OnSell: true, time.Now(), false}
