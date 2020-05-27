@@ -65,7 +65,7 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 		Event{ID: 4, Issuer: "EFF", Price: "220.000", EventName: "F cup", Total: 20, Sold: 0},	}
 
 	j := 0
-	for i< len(events)
+	for j< len(events)
 	{
 		eventAsBytes, _ := json.Marshal(events[j])
 		APIstub.PutState("EVENT"+strconv.Itoa((events[j].ID), eventAsBytes)	)	
