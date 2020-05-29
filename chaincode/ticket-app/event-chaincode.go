@@ -94,11 +94,11 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	var thisEvent = Event{}
 	json.Unmarshal(thisEventAsBytes, &thisEvent)
 	var left = thisEvent.Total - thisEvent.Sold
-	num, err := strconv.Atoi(args[1])
+	num, _ := strconv.Atoi(args[1])
 	if num > left {
 		return shim.Error("Incorrect number of tickets. Expecting")
 	} else {
-		ticketSet := []Ticket{}
+		//ticketSet := []Ticket{}
 		for i := 0; i < num; i++ {
 			eventAsBytes, _ := APIstub.GetState(args[0])
 			var event = Event{}
@@ -124,7 +124,7 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 
 	json.Unmarshal(numberAsBytes, &info)
 	var number = info.number
-	total, err := strconv.Atoi(args[3])
+	total, _ := strconv.Atoi(args[3])
 	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
 	for i := 0; i < event.Total; i++ {
 		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(event.ID) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
