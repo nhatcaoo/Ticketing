@@ -189,10 +189,11 @@ func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
 	if thisTicket.IsRedeemed == true {
 		return shim.Error("This ticket has already been redeemed!")
-	} else if arg[1] != strconv.Atoi(thisTicket.EventId) || args[2] != thisTicket.TicketId || args[3] != thisTicket.CurrentOwner {
+	} else if args[1] != strconv.Itoa(thisTicket.EventId) || args[2] != thisTicket.TicketId || args[3] != thisTicket.CurrentOwner {
 		return shim.Error("Ticket fault")
 	} else {
-		return shim.Success(Buffer.from("Valid ticket!"))
+		fmt.Printf("Valid ticket")
+		return string("Valid ticket!")
 	}
 
 	return shim.Success(nil)
@@ -213,10 +214,10 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	var id = args[0]
 	var queryString = "{\"selector\":{\"Ticket.EventId\":\"" + id + "\"}"
-	resultsIterator, err := stub.GetQueryResult(queryString)
+	resultsIterator, err := APIstub.GetQueryResult(queryString)
 	defer resultsIterator.Close()
 	if err != nil {
-		return nil, err
+		return shim.Error(err.Error())
 	}
 	var buffer bytes.Buffer
 	buffer.WriteString("[")
@@ -225,7 +226,7 @@ func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args
 		queryResponse,
 			err := resultsIterator.Next()
 		if err != nil {
-			return nil, err
+			return shim.Error(err.Error())
 		}
 		if bArrayMemberAlreadyWritten == true {
 			buffer.WriteString(",")
@@ -242,7 +243,7 @@ func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args
 	}
 	buffer.WriteString("]")
 	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
-	return buffer.Bytes(), nil
+	return shim.Success(buffer.Bytes())
 
 }
 
