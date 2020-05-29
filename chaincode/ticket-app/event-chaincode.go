@@ -193,7 +193,7 @@ func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args
 		return shim.Error("Ticket fault")
 	} else {
 		fmt.Printf("Valid ticket")
-		return string("Valid ticket!")
+		return shim.Success(nil)
 	}
 
 	return shim.Success(nil)
