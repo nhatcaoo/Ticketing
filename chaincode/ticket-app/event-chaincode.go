@@ -42,7 +42,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
 	} else if function == "initEvent" {
-		return s.initEvent(APIstub, args)
+		return s.initEvent(APIstub)
 	} else if function == "buyTicketFromSupplier" {
 		return s.buyTicketFromSupplier(APIstub, args)
 	} else if function == "buyTicketFromFromSecondaryMarket" {
@@ -76,8 +76,7 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 		eventAsBytes, _ := json.Marshal(events[j])
 		APIstub.PutState("EVENT"+strconv.Itoa(events[j].ID), eventAsBytes)
 		for i := 0; i < events[j].Total; i++ {
-			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + strconv.Itoa(i), Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, time.Now(), false}
-
+			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + strconv.Itoa(i), Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 			ticketAsBytes, _ := json.Marshal(ticket)
 			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
 		}
@@ -95,25 +94,26 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	var thisEvent = Event{}
 	json.Unmarshal(thisEventAsBytes, &thisEvent)
 	var left = thisEvent.Total - thisEvent.Sold
-	if strconv.Atoi(args[1]) > left {
+	var num = strconv.Atoi(args[1])
+	if num > left {
 		return shim.Error("Incorrect number of tickets. Expecting")
 	} else {
 		ticketSet := []Ticket{}
-		for i := 0; i < strconv.Atoi(args[1]); i++ {
+		for i := 0; i < num; i++ {
 			eventAsBytes, _ := APIstub.GetState(args[0])
 			var event = Event{}
 			json.Unmarshal(eventAsBytes, &event)
-			thisTicketAsBytes, _ = APIstub.GetState("TICKET" + strconv.Itoa(event.ID) + "-" + strconv.Itoa(event.Sold))
+			thisTicketAsBytes, _ := APIstub.GetState("TICKET" + strconv.Itoa(event.ID) + "-" + strconv.Itoa(event.Sold))
 			var thisTicket = Ticket{}
 			json.Unmarshal(thisTicketAsBytes, &thisTicket)
 			thisTicket.CurrentOwner = args[2]
 			thisTicket.OnSell = false
-			thisTicket.TimeStamp = time.Now()
+			thisTicket.TimeStamp = 12121211212 //timestamp
 			event.Sold++
 			eventAsBytes, _ = json.Marshal(event)
 			APIstub.PutState(args[0], eventAsBytes)
-			thisTicketAsBytes, _ = json.Marshal(thisTicket)
-			APIstub.PutState("TICKET"+event.ID+"-"+event.Sold, thisTicketAsBytes)
+			thisTicketAsBytes, _ := json.Marshal(thisTicket)
+			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
 		}
 	}
 	return shim.Success(nil)
