@@ -142,8 +142,8 @@ func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInte
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
 	thisTicket.OnSell = true
-	thisTicketAsBytes, _ = json.Marshal(thisEvent)
-	APIstub.PutState(thisEvent.ID, thisTicketAsBytes)
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
 }
 func (s *SmartContract) removeTicketFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -154,8 +154,8 @@ func (s *SmartContract) removeTicketFromSecondaryMarket(APIstub shim.ChaincodeSt
 		return shim.Error("This ticket has already been sold!")
 	}
 	thisTicket.OnSell = false
-	thisTicketAsBytes, _ = json.Marshal(thisEvent)
-	APIstub.PutState(thisEvent.ID, thisTicketAsBytes)
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
 }
 func (s *SmartContract) redeemTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -167,8 +167,8 @@ func (s *SmartContract) redeemTicket(APIstub shim.ChaincodeStubInterface, args [
 	}
 	thisTicket.OnSell = false
 	thisTicket.IsRedeemed = true
-	thisTicketAsBytes, _ = json.Marshal(thisEvent)
-	APIstub.PutState(thisEvent.ID, thisTicketAsBytes)
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
 }
 func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -179,8 +179,8 @@ func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeS
 		return shim.Error("Ticket is not on selling")
 	}
 	thisTicket.CurrentOwner = args[1]
-	thisTicketAsBytes, _ = json.Marshal(thisEvent)
-	APIstub.PutState(thisEvent.ID, thisTicketAsBytes)
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
 }
 func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -189,10 +189,10 @@ func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
 	if thisTicket.IsRedeemed == true {
 		return shim.Error("This ticket has already been redeemed!")
-	} else if arg[1] != thisTicket.EventId || args[2] != thisTicket.TicketId || args[3] != thisTicket.CurrentOwner {
+	} else if arg[1] != strconv.Atoi(thisTicket.EventId) || args[2] != thisTicket.TicketId || args[3] != thisTicket.CurrentOwner {
 		return shim.Error("Ticket fault")
 	} else {
-		return shim.Success("Valid ticket!")
+		return shim.Success(Buffer.from("Valid ticket!"))
 	}
 
 	return shim.Success(nil)
