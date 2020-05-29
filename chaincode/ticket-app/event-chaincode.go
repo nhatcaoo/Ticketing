@@ -22,13 +22,13 @@ type Event struct {
 	Sold      int    `json:"sold"`
 }
 type Ticket struct {
-	EventId      int    `json:"eventId"`
-	TicketId     string `json:"ticketId"`
-	Cost         string `json:"cost"`
-	CurrentOwner string `json:"currentOwner"`
-	OnSell       bool   `json:"onSell"`
-	TimeStamp    int    `json:"timeStamp"`
-	IsRedeemed   bool   `json:"isRedeemed"`
+	EventId      int       `json:"eventId"`
+	TicketId     string    `json:"ticketId"`
+	Cost         string    `json:"cost"`
+	CurrentOwner string    `json:"currentOwner"`
+	OnSell       bool      `json:"onSell"`
+	TimeStamp    time.Time `json:"timeStamp"`
+	IsRedeemed   bool      `json:"isRedeemed"`
 }
 type Info struct {
 	number int `json:"number"`
@@ -94,7 +94,7 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	var thisEvent = Event{}
 	json.Unmarshal(thisEventAsBytes, &thisEvent)
 	var left = thisEvent.Total - thisEvent.Sold
-	var num = strconv.Atoi(args[1])
+	num, err := strconv.Atoi(args[1])
 	if num > left {
 		return shim.Error("Incorrect number of tickets. Expecting")
 	} else {
@@ -108,11 +108,11 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 			json.Unmarshal(thisTicketAsBytes, &thisTicket)
 			thisTicket.CurrentOwner = args[2]
 			thisTicket.OnSell = false
-			thisTicket.TimeStamp = 12121211212 //timestamp
+			thisTicket.TimeStamp = time.Now() //timestamp
 			event.Sold++
 			eventAsBytes, _ = json.Marshal(event)
 			APIstub.PutState(args[0], eventAsBytes)
-			thisTicketAsBytes, _ := json.Marshal(thisTicket)
+			thisTicketAsBytes, _ = json.Marshal(thisTicket)
 			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
 		}
 	}
@@ -124,9 +124,10 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 
 	json.Unmarshal(numberAsBytes, &info)
 	var number = info.number
-	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: args[3], Sold: 0}
+	total, err := strconv.Atoi(args[3])
+	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
 	for i := 0; i < event.Total; i++ {
-		var ticket = Ticket{EventId: event.ID, TicketId: event.ID + "-" + i, Cost: event.Price, CurrentOwner: "N/A", OnSell: true, time.Now(), false}
+		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(event.ID) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 		ticketAsBytes, _ := json.Marshal(ticket)
 		APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
 	}
