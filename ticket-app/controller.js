@@ -44,7 +44,7 @@ module.exports = (function () {
         }
 
         const request = {
-          chaincodeId: "ticketing-app",
+          chaincodeId: "ticketing",
           txId: tx_id,
           fcn: "queryAllTicket",
           args: [''],
@@ -104,7 +104,7 @@ module.exports = (function () {
           }
 
           const request = {
-            chaincodeId: "ticketing-app",
+            chaincodeId: "ticketing",
             txId: tx_id,
             fcn: "queryAllTicket",
             args: [key],
@@ -163,7 +163,7 @@ module.exports = (function () {
           }
 
           const request = {
-            chaincodeId: "ticketing-app",
+            chaincodeId: "ticketing",
             txId: tx_id,
             fcn: "queryTicket",
             args: [key],
@@ -238,7 +238,7 @@ module.exports = (function () {
           tx_id = fabric_client.newTransactionID();
           console.log("Assigning transaction_id: ", tx_id._transaction_id);
           const request = {
-            chaincodeId: "ticketing-app",
+            chaincodeId: "ticketing",
             fcn: "createEvent",
             args: [issuer, price, eventName, total],
             chainId: "mychannel",
@@ -412,7 +412,7 @@ module.exports = (function () {
 
           var request = {
             //targets : --- letting this default to the peers assigned to the channel
-            chaincodeId: "ticketing-app",
+            chaincodeId: "ticketing",
             fcn: "buyTicketFromSupplier",
             args: [key, number, holder, owner],
             chainId: "mychannel",

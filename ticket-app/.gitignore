@@ -10,4 +10,4 @@
 .project
 
 # fabric sdk node modules
-ticketing-app/node_modules/
+ticketing/node_modules/
