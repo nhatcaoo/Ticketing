@@ -45,6 +45,7 @@ type Tuna struct {
  -- see initLedger()
 */
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
+
 	return shim.Success(nil)
 }
 
