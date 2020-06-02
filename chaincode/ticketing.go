@@ -247,7 +247,7 @@ func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface, args 
 	return shim.Success(buffer.Bytes())
 }
 func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	var id = args[0]
+	//var id = args[0]
 	var queryString = "{\r\n\"selector\":{\r\n\"total\":{\r\n \"$gt\":0\r\n}\r\n}\r\n}"
 	resultsIterator, err := APIstub.GetQueryResult(queryString)
 	defer resultsIterator.Close()
