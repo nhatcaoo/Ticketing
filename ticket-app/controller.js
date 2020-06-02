@@ -10,8 +10,68 @@ var os = require("os");
 
 module.exports = (function () {
   return {
+    get_all_event: function (req, res) {
+    console.log("getting all event: ");
+   
+    var fabric_client = new Fabric_Client();
+    var channel = fabric_client.newChannel("mychannel");
+    var peer = fabric_client.newPeer("grpc://localhost:7051");
+    channel.addPeer(peer);
+
+    member_user = null;
+    var store_path = path.join(os.homedir(), ".hfc-key-store");
+    console.log("Store path:" + store_path);
+    var tx_id = null;
+
+    Fabric_Client.newDefaultKeyValueStore({ path: store_path })
+      .then((state_store) => {
+        fabric_client.setStateStore(state_store);
+        var crypto_suite = Fabric_Client.newCryptoSuite();
+        var crypto_store = Fabric_Client.newCryptoKeyStore({
+          path: store_path,
+        });
+        crypto_suite.setCryptoKeyStore(crypto_store);
+        fabric_client.setCryptoSuite(crypto_suite);
+
+        return fabric_client.getUserContext("user1", true);
+      })
+      .then((user_from_store) => {
+        if (user_from_store && user_from_store.isEnrolled()) {
+          console.log("Successfully loaded user1 from persistence");
+          member_user = user_from_store;
+        } else {
+          throw new Error("Failed to get user1.... run registerUser.js");
+        }
+
+        const request = {
+          chaincodeId: "ticketing-app",
+          txId: tx_id,
+          fcn: "queryAllTicket",
+          args: [''],
+        };
+
+        return channel.queryByChaincode(request);
+      })
+      .then((query_responses) => {
+        console.log("Query has completed, checking results");
+
+        if (query_responses && query_responses.length == 1) {
+          if (query_responses[0] instanceof Error) {
+            console.error("error from query = ", query_responses[0]);
+          } else {
+            console.log("Response is ", query_responses[0].toString());
+            res.json(JSON.parse(query_responses[0].toString()));
+          }
+        } else {
+          console.log("No payloads were returned from query");
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to query :: " + err);
+      });
+  },
     get_all_ticket: function (req, res) {
-      console.log("getting all tuna from database: ");
+      console.log("getting all ticket of an event: ");
       var key = req.params.id;
       var fabric_client = new Fabric_Client();
       var channel = fabric_client.newChannel("mychannel");
@@ -44,7 +104,7 @@ module.exports = (function () {
           }
 
           const request = {
-            chaincodeId: "ticket-app",
+            chaincodeId: "ticketing-app",
             txId: tx_id,
             fcn: "queryAllTicket",
             args: [key],
@@ -67,7 +127,7 @@ module.exports = (function () {
           }
         })
         .catch((err) => {
-          console.error("Failed to query successfully :: " + err);
+          console.error("Failed to query :: " + err);
         });
     },
     get_ticket: function (req, res) {
@@ -103,7 +163,7 @@ module.exports = (function () {
           }
 
           const request = {
-            chaincodeId: "ticket-app",
+            chaincodeId: "ticketing-app",
             txId: tx_id,
             fcn: "queryTicket",
             args: [key],
@@ -138,9 +198,9 @@ module.exports = (function () {
       console.log(array);
 
       var issuer = array[0];
-      var Price = array[1];
-      var EventName = array[2];
-      var Total = array[3];
+      var price = array[1];
+      var eventName = array[2];
+      var total = array[3];
 
       var fabric_client = new Fabric_Client();
 
@@ -178,9 +238,9 @@ module.exports = (function () {
           tx_id = fabric_client.newTransactionID();
           console.log("Assigning transaction_id: ", tx_id._transaction_id);
           const request = {
-            chaincodeId: "ticket-app",
+            chaincodeId: "ticketing-app",
             fcn: "createEvent",
-            args: [issuer, Price, EventName, Total],
+            args: [issuer, price, eventName, total],
             chainId: "mychannel",
             txId: tx_id,
           };
@@ -351,7 +411,7 @@ module.exports = (function () {
 
           var request = {
             //targets : --- letting this default to the peers assigned to the channel
-            chaincodeId: "ticket-app",
+            chaincodeId: "ticketing-app",
             fcn: "buyTicketFromSupplier",
             args: [key, number, holder, owner],
             chainId: "mychannel",

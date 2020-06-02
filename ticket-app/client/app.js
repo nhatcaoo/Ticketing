@@ -1,112 +1,124 @@
 // SPDX-License-Identifier: Apache-2.0
 
-'use strict';
+"use strict";
 
-var app = angular.module('application', []);
-
+var app = angular.module("application", []);
+var controller = require("../controller.js");
 // Angular Controller
-app.controller('appController', function($scope, appFactory){
+app.controller("appController", function ($scope, appFactory) {
+  $("#success_holder").hide();
+  $("#success_create").hide();
+  $("#error_holder").hide();
+  $("#error_query").hide();
 
-	$("#success_holder").hide();
-	$("#success_create").hide();
-	$("#error_holder").hide();
-	$("#error_query").hide();
-	
-	$scope.queryAllTuna = function(){
+  $scope.get_all_ticket = function () {
+    appFactory.get_all_ticket(function (data) {
+      var array = [];
+      for (var i = 0; i < data.length; i++) {
+        parseInt(data[i].Key);
+        data[i].Record.Key = parseInt(data[i].Key);
+        array.push(data[i].Record);
+      }
+      array.sort(function (a, b) {
+        return parseFloat(a.Key) - parseFloat(b.Key);
+      });
+      $scope.all_ticket = array;
+    });
+  };
 
-		appFactory.queryAllTuna(function(data){
-			var array = [];
-			for (var i = 0; i < data.length; i++){
-				parseInt(data[i].Key);
-				data[i].Record.Key = parseInt(data[i].Key);
-				array.push(data[i].Record);
-			}
-			array.sort(function(a, b) {
-			    return parseFloat(a.Key) - parseFloat(b.Key);
-			});
-			$scope.all_tuna = array;
-		});
-	}
+  $scope.get_all_event = function () {
+    appFactory.get_all_event(function (data) {
+      var array = [];
+      for (var i = 0; i < data.length; i++) {
+        parseInt(data[i].Key);
+        data[i].Record.Key = parseInt(data[i].Key);
+        array.push(data[i].Record);
+      }
+      array.sort(function (a, b) {
+        return parseFloat(a.Key) - parseFloat(b.Key);
+      });
+      $scope.all_event = array;
+    });
+  };
+  $scope.get_ticket = function () {
+    var id = $scope.tuna_id;
 
-	$scope.queryTuna = function(){
+    appFactory.get_ticket(id, function (data) {
+      $scope.get_ticket = data;
 
-		var id = $scope.tuna_id;
+      if ($scope.get_ticket == "Could not locate ticket") {
+        console.log();
+        $("#error_query").show();
+      } else {
+        $("#error_query").hide();
+      }
+    });
+  };
 
-		appFactory.queryTuna(id, function(data){
-			$scope.query_tuna = data;
+  $scope.create_event = function () {
+    appFactory.create_event($scope.event, function (data) {
+      $scope.create_event = data;
+      $("#success_create").show();
+    });
+  };
 
-			if ($scope.query_tuna == "Could not locate tuna"){
-				console.log()
-				$("#error_query").show();
-			} else{
-				$("#error_query").hide();
-			}
-		});
-	}
-
-	$scope.recordTuna = function(){
-
-		appFactory.recordTuna($scope.tuna, function(data){
-			$scope.create_tuna = data;
-			$("#success_create").show();
-		});
-	}
-
-	$scope.changeHolder = function(){
-
-		appFactory.changeHolder($scope.holder, function(data){
-			$scope.change_holder = data;
-			if ($scope.change_holder == "Error: no tuna catch found"){
-				$("#error_holder").show();
-				$("#success_holder").hide();
-			} else{
-				$("#success_holder").show();
-				$("#error_holder").hide();
-			}
-		});
-	}
-
+  $scope.buyTicketFromSupplier = function () {
+    appFactory.buyTicketFromSupplier($scope.holder, function (data) {
+      $scope.buyTicketFromSupplier = data;
+      if ($scope.buyTicketFromSupplier == "Error: no tuna catch found") {
+        $("#error_holder").show();
+        $("#success_holder").hide();
+      } else {
+        $("#success_holder").show();
+        $("#error_holder").hide();
+      }
+    });
+  };
+  
 });
 
 // Angular Factory
-app.factory('appFactory', function($http){
-	
-	var factory = {};
+app.factory("appFactory", function ($http) {
+  var factory = {};
 
-    factory.queryAllTuna = function(callback){
+  factory.get_all_event = function (callback) {
+    $http.get("/get_all_event/").success(function (output) {
+      callback(output);
+    });
+  };
+  factory.get_all_ticket = function (id, callback) {
+    $http.get("/get_all_ticket/" + id).success(function (output) {
+      callback(output);
+    });
+  };
+  factory.get_ticket = function (id, callback) {
+    $http.get("/get_ticket/" + id).success(function (output) {
+      callback(output);
+    });
+  };
 
-    	$http.get('/get_all_tuna/').success(function(output){
-			callback(output)
-		});
-	}
+  factory.create_event = function (data, callback) {
+    var event =
+      data.issuer +
+      "-" +
+      data.price +
+      "-" +
+      data.eventName +
+      "-" +
+      data.total;
 
-	factory.queryTuna = function(id, callback){
-    	$http.get('/get_tuna/'+id).success(function(output){
-			callback(output)
-		});
-	}
+    $http.get("/create_event/" + event).success(function (output) {
+      callback(output);
+    });
+  };
 
-	factory.recordTuna = function(data, callback){
+  factory.buyTicketFromSupplier = function (data, callback) {
+    var info = data.key + "-" + data.number + "-" + data.owner;
 
-		data.location = data.longitude + ", "+ data.latitude;
+    $http.get("/buyTicketFromSupplier/" + info).success(function (output) {
+      callback(output);
+    });
+  };
 
-		var tuna = data.id + "-" + data.location + "-" + data.timestamp + "-" + data.holder + "-" + data.vessel;
-
-    	$http.get('/add_tuna/'+tuna).success(function(output){
-			callback(output)
-		});
-	}
-
-	factory.changeHolder = function(data, callback){
-
-		var holder = data.id + "-" + data.name;
-
-    	$http.get('/change_holder/'+holder).success(function(output){
-			callback(output)
-		});
-	}
-
-	return factory;
+  return factory;
 });
-
-

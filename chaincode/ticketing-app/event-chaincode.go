@@ -7,7 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	//"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
 )
 
@@ -211,9 +212,9 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 	return shim.Success(ticketAsBytes)
 
 }
-func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	var id = args[0]
-	var queryString = "{\"selector\":{\"Ticket.EventId\":\"" + id + "\"}"
+	var queryString = "{\"selector\":{\"Event.ID\":\"" + id + "\"}"
 	resultsIterator, err := APIstub.GetQueryResult(queryString)
 	defer resultsIterator.Close()
 	if err != nil {
@@ -244,7 +245,40 @@ func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args
 	buffer.WriteString("]")
 	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
 	return shim.Success(buffer.Bytes())
-
+}
+func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	var id = args[0]
+	var queryString = "{\r\n\"selector\":{\r\n\"total\":{\r\n \"$gt\":0\r\n}\r\n}\r\n}"
+	resultsIterator, err := APIstub.GetQueryResult(queryString)
+	defer resultsIterator.Close()
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		queryResponse,
+			err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"Key\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(queryResponse.Key)
+		buffer.WriteString("\"")
+		buffer.WriteString(", \"Record\":")
+		// Record is a JSON object, so we write as-is
+		buffer.WriteString(string(queryResponse.Value))
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
+	return shim.Success(buffer.Bytes())
 }
 
 func main() {
