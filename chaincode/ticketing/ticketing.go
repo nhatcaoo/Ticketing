@@ -65,25 +65,28 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	return shim.Error("Wrong function name.")
 }
 func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
-
+	fmt.Printf("start: ")
 	events := []Event{
 		Event{ID: 0, Issuer: "VFF", Price: "220.000", EventName: "Suzuki cup", Total: 20, Sold: 0},
 		Event{ID: 1, Issuer: "BFF", Price: "220.000", EventName: "B cup", Total: 20, Sold: 0},
 		Event{ID: 2, Issuer: "CFF", Price: "220.000", EventName: "C cup", Total: 20, Sold: 0},
 		Event{ID: 3, Issuer: "DFF", Price: "220.000", EventName: "D cup", Total: 20, Sold: 0},
 		Event{ID: 4, Issuer: "EFF", Price: "220.000", EventName: "F cup", Total: 20, Sold: 0}}
-
+	fmt.Printf("done 1: ")
 	j := 0
-	for j < len(events) {
+	for j < 5 {
 		eventAsBytes, _ := json.Marshal(events[j])
 		APIstub.PutState("EVENT"+strconv.Itoa(events[j].ID), eventAsBytes)
 		for i := 0; i < events[j].Total; i++ {
+
 			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + strconv.Itoa(i), Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 			ticketAsBytes, _ := json.Marshal(ticket)
 			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
+			fmt.Printf("-\n ")
 		}
 		j = j + 1
 	}
+	fmt.Printf("done 2: ")
 	var info = Info{}
 	info.number = 5
 	infoAsBytes, _ := json.Marshal(info)
