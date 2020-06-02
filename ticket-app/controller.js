@@ -244,6 +244,7 @@ module.exports = (function () {
             chainId: "mychannel",
             txId: tx_id,
           };
+          
 
           return channel.sendTransactionProposal(request);
         })
