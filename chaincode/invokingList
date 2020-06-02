@@ -1,7 +1,0 @@
-- initLedger
-- create Event
-- buyTicketFromSupplier
-- upTicket
-- buyTicketFromSecondaryMarket
-- redeemTicket 
-'{"function":"initEvent","Args":[""]}'
