@@ -1,176 +1,240 @@
-// SPDX-License-Identifier: Apache-2.0
-
-/*
-  Sample Chaincode based on Demonstrated Scenario
-
- This code is based on code written by the Hyperledger Fabric community.
-  Original code can be found here: https://github.com/hyperledger/fabric-samples/blob/release/chaincode/fabcar/fabcar.go
-*/
-
 package main
 
-/* Imports
-* 4 utility libraries for handling bytes, reading and writing JSON,
-formatting, and string manipulation
-* 2 specific Hyperledger Fabric specific libraries for Smart Contracts
-*/
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strconv"
+	"time"
 
+	//"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
+	//"github.com/hyperledger/fabric-protos-go"
 )
 
-// Define the Smart Contract structure
 type SmartContract struct {
 }
-
-/* Define Tuna structure, with 4 properties.
-Structure tags are used by encoding/json library
-*/
-type Tuna struct {
-	Vessel    string `json:"vessel"`
-	Timestamp string `json:"timestamp"`
-	Location  string `json:"location"`
-	Holder    string `json:"holder"`
+type Event struct {
+	ID        int    `json:"id"`
+	Issuer    string `json:"issuer"`
+	Price     string `json:"price"`
+	EventName string `json:"eventName"`
+	Total     int    `json:"total"`
+	Sold      int    `json:"sold"`
+}
+type Ticket struct {
+	EventId      int       `json:"eventId"`
+	TicketId     string    `json:"ticketId"`
+	Cost         string    `json:"cost"`
+	CurrentOwner string    `json:"currentOwner"`
+	OnSell       bool      `json:"onSell"`
+	TimeStamp    time.Time `json:"timeStamp"`
+	IsRedeemed   bool      `json:"isRedeemed"`
+}
+type Info struct {
+	number int `json:"number"`
 }
 
-/*
- * The Init method *
- called when the Smart Contract "tuna-chaincode" is instantiated by the network
- * Best practice is to have any Ledger initialization in separate function
- -- see initLedger()
-*/
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
-
-/*
- * The Invoke method *
- called when an application requests to run the Smart Contract "tuna-chaincode"
- The app also specifies the specific smart contract function to call with args
-*/
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-
-	// Retrieve the requested Smart Contract function and arguments
 	function, args := APIstub.GetFunctionAndParameters()
-	// Route to the appropriate handler function to interact with the ledger
-	if function == "queryTuna" {
-		return s.queryTuna(APIstub, args)
-	} else if function == "initLedger" {
-		return s.initLedger(APIstub)
-	} else if function == "recordTuna" {
-		return s.recordTuna(APIstub, args)
-	} else if function == "queryAllTuna" {
-		return s.queryAllTuna(APIstub)
-	} else if function == "changeTunaHolder" {
-		return s.changeTunaHolder(APIstub, args)
+	if function == "queryTicket" {
+		return s.queryTicket(APIstub, args)
+	} else if function == "initEvent" {
+		return s.initEvent(APIstub)
+	} else if function == "buyTicketFromSupplier" {
+		return s.buyTicketFromSupplier(APIstub, args)
+	} else if function == "buyTicketFromFromSecondaryMarket" {
+		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
+	} else if function == "queryAllTicket" {
+		return s.queryAllTicket(APIstub, args)
+	} else if function == "createEvent" {
+		return s.createEvent(APIstub, args)
+	} else if function == "upTicketToSecondaryMarket" {
+		return s.upTicketToSecondaryMarket(APIstub, args)
+	} else if function == "removeTicketFromSecondaryMarket" {
+		return s.removeTicketFromSecondaryMarket(APIstub, args)
+	} else if function == "redeemTicket" {
+		return s.redeemTicket(APIstub, args)
+	} else if function == "checkoutTicket" {
+		return s.checkoutTicket(APIstub, args)
+	}
+	return shim.Error("Wrong function name.")
+}
+func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
+	log.Fatalf("start: ")
+	//logger.Info("get_caller_data called")
+	events := []Event{
+		Event{ID: 0, Issuer: "VFF", Price: "220.000", EventName: "Suzuki cup", Total: 20, Sold: 0},
+		Event{ID: 1, Issuer: "BFF", Price: "220.000", EventName: "B cup", Total: 20, Sold: 0},
+		Event{ID: 2, Issuer: "CFF", Price: "220.000", EventName: "C cup", Total: 20, Sold: 0},
+		Event{ID: 3, Issuer: "DFF", Price: "220.000", EventName: "D cup", Total: 20, Sold: 0},
+		Event{ID: 4, Issuer: "EFF", Price: "220.000", EventName: "F cup", Total: 20, Sold: 0}}
+	log.Fatalf("done 1: ")
+	j := 0
+	for j < 5 {
+		eventAsBytes, _ := json.Marshal(events[j])
+		APIstub.PutState("EVENT"+strconv.Itoa(events[j].ID), eventAsBytes)
+		for i := 0; i < events[j].Total; i++ {
+
+			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + strconv.Itoa(i), Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
+			ticketAsBytes, _ := json.Marshal(ticket)
+			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
+			log.Fatalf("-\n ")
+		}
+		j = j + 1
+	}
+	fmt.Printf("done 2: ")
+	var info = Info{}
+	info.number = 5
+	infoAsBytes, _ := json.Marshal(info)
+	APIstub.PutState("NUMBER_EVENTS", infoAsBytes)
+	return shim.Success(nil)
+}
+func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	//arg: event ID : "EVENT"+strconv.Itoa(i)
+	thisEventAsBytes, _ := APIstub.GetState(args[0])
+	var thisEvent = Event{}
+	json.Unmarshal(thisEventAsBytes, &thisEvent)
+	var left = thisEvent.Total - thisEvent.Sold
+	num, _ := strconv.Atoi(args[1])
+	if num > left {
+		return shim.Error("Incorrect number of tickets. Expecting")
+	} else {
+		//ticketSet := []Ticket{}
+		for i := 0; i < num; i++ {
+			eventAsBytes, _ := APIstub.GetState(args[0])
+			var event = Event{}
+			json.Unmarshal(eventAsBytes, &event)
+			thisTicketAsBytes, _ := APIstub.GetState("TICKET" + strconv.Itoa(event.ID) + "-" + strconv.Itoa(event.Sold))
+			var thisTicket = Ticket{}
+			json.Unmarshal(thisTicketAsBytes, &thisTicket)
+			thisTicket.CurrentOwner = args[2]
+			thisTicket.OnSell = false
+			thisTicket.TimeStamp = time.Now() //timestamp
+			event.Sold++
+			eventAsBytes, _ = json.Marshal(event)
+			APIstub.PutState(args[0], eventAsBytes)
+			thisTicketAsBytes, _ = json.Marshal(thisTicket)
+			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
+		}
+	}
+	return shim.Success(nil)
+}
+func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	var info = Info{}
+	numberAsBytes, _ := APIstub.GetState("NUMBER_EVENTS")
+
+	json.Unmarshal(numberAsBytes, &info)
+	var number = info.number
+	total, _ := strconv.Atoi(args[3])
+	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
+	for i := 0; i < event.Total; i++ {
+		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(event.ID) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
+		ticketAsBytes, _ := json.Marshal(ticket)
+		APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
+	}
+	number++
+	info.number = number
+	numberAsBytes, _ = json.Marshal(info)
+	APIstub.PutState("NUMBER_EVENTS", numberAsBytes)
+	return shim.Success(nil)
+}
+func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	thisTicketAsBytes, _ := APIstub.GetState(args[0])
+	var thisTicket = Ticket{}
+	json.Unmarshal(thisTicketAsBytes, &thisTicket)
+	thisTicket.OnSell = true
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
+	return shim.Success(nil)
+}
+func (s *SmartContract) removeTicketFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	thisTicketAsBytes, _ := APIstub.GetState(args[0])
+	var thisTicket = Ticket{}
+	json.Unmarshal(thisTicketAsBytes, &thisTicket)
+	if thisTicket.OnSell == true {
+		return shim.Error("This ticket has already been sold!")
+	}
+	thisTicket.OnSell = false
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
+	return shim.Success(nil)
+}
+func (s *SmartContract) redeemTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	thisTicketAsBytes, _ := APIstub.GetState(args[0])
+	var thisTicket = Ticket{}
+	json.Unmarshal(thisTicketAsBytes, &thisTicket)
+	if thisTicket.OnSell == true {
+		return shim.Error("This ticket has already been sold!")
+	}
+	thisTicket.OnSell = false
+	thisTicket.IsRedeemed = true
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
+	return shim.Success(nil)
+}
+func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	thisTicketAsBytes, _ := APIstub.GetState(args[0])
+	var thisTicket = Ticket{}
+	json.Unmarshal(thisTicketAsBytes, &thisTicket)
+	if thisTicket.OnSell == false {
+		return shim.Error("Ticket is not on selling")
+	}
+	thisTicket.CurrentOwner = args[1]
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
+	return shim.Success(nil)
+}
+func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	thisTicketAsBytes, _ := APIstub.GetState(args[0])
+	var thisTicket = Ticket{}
+	json.Unmarshal(thisTicketAsBytes, &thisTicket)
+	if thisTicket.IsRedeemed == true {
+		return shim.Error("This ticket has already been redeemed!")
+	} else if args[1] != strconv.Itoa(thisTicket.EventId) || args[2] != thisTicket.TicketId || args[3] != thisTicket.CurrentOwner {
+		return shim.Error("Ticket fault")
+	} else {
+		fmt.Printf("Valid ticket")
+		return shim.Success(nil)
 	}
 
-	return shim.Error("Invalid Smart Contract function name.")
+	return shim.Success(nil)
 }
-
-/*
- * The queryTuna method *
-Used to view the records of one particular tuna
-It takes one argument -- the key for the tuna in question
-*/
-func (s *SmartContract) queryTuna(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
-	tunaAsBytes, _ := APIstub.GetState(args[0])
-	if tunaAsBytes == nil {
-		return shim.Error("Could not locate tuna")
+	ticketAsBytes, _ := APIstub.GetState(args[0])
+	if ticketAsBytes == nil {
+		return shim.Error("Could not locate ticket")
 	}
-	return shim.Success(tunaAsBytes)
-}
-
-/*
- * The initLedger method *
-Will add test data (10 tuna catches)to our network
-*/
-func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
-	tuna := []Tuna{
-		Tuna{Vessel: "923F", Location: "67.0006, -70.5476", Timestamp: "1504054225", Holder: "Miriam"},
-		Tuna{Vessel: "M83T", Location: "91.2395, -49.4594", Timestamp: "1504057825", Holder: "Dave"},
-		Tuna{Vessel: "T012", Location: "58.0148, 59.01391", Timestamp: "1493517025", Holder: "Igor"},
-		Tuna{Vessel: "P490", Location: "-45.0945, 0.7949", Timestamp: "1496105425", Holder: "Amalea"},
-		Tuna{Vessel: "S439", Location: "-107.6043, 19.5003", Timestamp: "1493512301", Holder: "Rafa"},
-		Tuna{Vessel: "J205", Location: "-155.2304, -15.8723", Timestamp: "1494117101", Holder: "Shen"},
-		Tuna{Vessel: "S22L", Location: "103.8842, 22.1277", Timestamp: "1496104301", Holder: "Leila"},
-		Tuna{Vessel: "EI89", Location: "-132.3207, -34.0983", Timestamp: "1485066691", Holder: "Yuan"},
-		Tuna{Vessel: "129R", Location: "153.0054, 12.6429", Timestamp: "1485153091", Holder: "Carlo"},
-		Tuna{Vessel: "49W4", Location: "51.9435, 8.2735", Timestamp: "1487745091", Holder: "Fatima"},
-	}
-
-	i := 0
-	for i < len(tuna) {
-		fmt.Println("i is ", i)
-		tunaAsBytes, _ := json.Marshal(tuna[i])
-		APIstub.PutState(strconv.Itoa(i+1), tunaAsBytes)
-		fmt.Println("Added", tuna[i])
-		i = i + 1
-	}
-
-	return shim.Success(nil)
+	return shim.Success(ticketAsBytes)
 
 }
-
-/*
- * The recordTuna method *
-Fisherman like Sarah would use to record each of her tuna catches.
-This method takes in five arguments (attributes to be saved in the ledger).
-*/
-func (s *SmartContract) recordTuna(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 5 {
-		return shim.Error("Incorrect number of arguments. Expecting 5")
-	}
-
-	var tuna = Tuna{Vessel: args[1], Location: args[2], Timestamp: args[3], Holder: args[4]}
-
-	tunaAsBytes, _ := json.Marshal(tuna)
-	err := APIstub.PutState(args[0], tunaAsBytes)
-	if err != nil {
-		return shim.Error(fmt.Sprintf("Failed to record tuna catch: %s", args[0]))
-	}
-
-	return shim.Success(nil)
-}
-
-/*
- * The queryAllTuna method *
-allows for assessing all the records added to the ledger(all tuna catches)
-This method does not take any arguments. Returns JSON string containing results.
-*/
-func (s *SmartContract) queryAllTuna(APIstub shim.ChaincodeStubInterface) sc.Response {
-
-	startKey := "0"
-	endKey := "999"
-
-	resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
+func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	var id = args[0]
+	var queryString = "{\"selector\":{\"Event.ID\":\"" + id + "\"}"
+	resultsIterator, err := APIstub.GetQueryResult(queryString)
+	defer resultsIterator.Close()
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	defer resultsIterator.Close()
-
-	// buffer is a JSON array containing QueryResults
 	var buffer bytes.Buffer
 	buffer.WriteString("[")
-
 	bArrayMemberAlreadyWritten := false
 	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
+		queryResponse,
+			err := resultsIterator.Next()
 		if err != nil {
 			return shim.Error(err.Error())
 		}
-		// Add comma before array members,suppress it for the first array member
 		if bArrayMemberAlreadyWritten == true {
 			buffer.WriteString(",")
 		}
@@ -178,7 +242,6 @@ func (s *SmartContract) queryAllTuna(APIstub shim.ChaincodeStubInterface) sc.Res
 		buffer.WriteString("\"")
 		buffer.WriteString(queryResponse.Key)
 		buffer.WriteString("\"")
-
 		buffer.WriteString(", \"Record\":")
 		// Record is a JSON object, so we write as-is
 		buffer.WriteString(string(queryResponse.Value))
@@ -186,51 +249,45 @@ func (s *SmartContract) queryAllTuna(APIstub shim.ChaincodeStubInterface) sc.Res
 		bArrayMemberAlreadyWritten = true
 	}
 	buffer.WriteString("]")
-
-	fmt.Printf("- queryAllTuna:\n%s\n", buffer.String())
-
+	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
+	return shim.Success(buffer.Bytes())
+}
+func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	//var id = args[0]
+	var queryString = "{\r\n\"selector\":{\r\n\"total\":{\r\n \"$gt\":0\r\n}\r\n}\r\n}"
+	resultsIterator, err := APIstub.GetQueryResult(queryString)
+	defer resultsIterator.Close()
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		queryResponse,
+			err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"Key\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(queryResponse.Key)
+		buffer.WriteString("\"")
+		buffer.WriteString(", \"Record\":")
+		// Record is a JSON object, so we write as-is
+		buffer.WriteString(string(queryResponse.Value))
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
 	return shim.Success(buffer.Bytes())
 }
 
-/*
- * The changeTunaHolder method *
-The data in the world state can be updated with who has possession.
-This function takes in 2 arguments, tuna id and new holder name.
-*/
-func (s *SmartContract) changeTunaHolder(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
-	}
-
-	tunaAsBytes, _ := APIstub.GetState(args[0])
-	if tunaAsBytes == nil {
-		return shim.Error("Could not locate tuna")
-	}
-	tuna := Tuna{}
-
-	json.Unmarshal(tunaAsBytes, &tuna)
-	// Normally check that the specified argument is a valid holder of tuna
-	// we are skipping this check for this example
-	tuna.Holder = args[1]
-
-	tunaAsBytes, _ = json.Marshal(tuna)
-	err := APIstub.PutState(args[0], tunaAsBytes)
-	if err != nil {
-		return shim.Error(fmt.Sprintf("Failed to change tuna holder: %s", args[0]))
-	}
-
-	return shim.Success(nil)
-}
-
-/*
- * main function *
-calls the Start function
-The main function starts the chaincode in the container during instantiation.
-*/
 func main() {
-
-	// Create a new Smart Contract
 	err := shim.Start(new(SmartContract))
 	if err != nil {
 		fmt.Printf("Error creating new Smart Contract: %s", err)
