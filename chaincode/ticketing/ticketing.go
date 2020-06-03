@@ -41,7 +41,7 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-	log.Fatalf("Invoke   : ")
+	log.Fatalf("Invoke 1  : ")
 	log.Fatalf("go: ")
 	function, args := APIstub.GetFunctionAndParameters()
 	log.Fatalf("Invoke2: ")
@@ -49,7 +49,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
-	} else if function == "initEvent" {
+	} else if function == "init1Event" {
 		log.Fatalf("step 1: ")
 		return s.initEvent(APIstub)
 	} else if function == "buyTicketFromSupplier" {
