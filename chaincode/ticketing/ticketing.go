@@ -41,11 +41,12 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-	log.Fatalf("start: ")
+	log.Fatalf("Invoke: ")
 	function, args := APIstub.GetFunctionAndParameters()
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
 	} else if function == "initEvent" {
+		log.Fatalf("step 1: ")
 		return s.initEvent(APIstub)
 	} else if function == "buyTicketFromSupplier" {
 		return s.buyTicketFromSupplier(APIstub, args)
@@ -67,7 +68,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	return shim.Error("Wrong function name.")
 }
 func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
-	log.Fatalf("start: ")
+	log.Fatalf("init: ")
 	//logger.Info("get_caller_data called")
 	events := []Event{
 		Event{ID: 0, Issuer: "VFF", Price: "220.000", EventName: "Suzuki cup", Total: 20, Sold: 0},
