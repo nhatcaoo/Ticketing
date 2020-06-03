@@ -5,7 +5,6 @@ import (
 
 	//"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	sc "github.com/hyperledger/fabric/protos/peer"
 	//"github.com/hyperledger/fabric-protos-go"
 )
 
@@ -32,9 +31,9 @@ type Info struct {
 	number int `json:"number"`
 }
 
-func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
+func () Init() {
 	return shim.Success(nil)
 }
-func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
+func () Invoke() {
 
 }
