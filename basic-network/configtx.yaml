@@ -68,7 +68,7 @@ Organizations:
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
             - Host: peer0.org1.example.com
-              Port: 7051
+              Port: 5432
 
 ################################################################################
 #
@@ -85,7 +85,7 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-        - orderer.example.com:7051
+        - orderer.example.com:5432
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s
