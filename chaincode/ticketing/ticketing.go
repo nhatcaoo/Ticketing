@@ -45,10 +45,9 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	function, args := APIstub.GetFunctionAndParameters()
 	log.Fatalf(function)
 	log.Fatalf("Invoke2: ")
-
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
-	} else if function == "init1Event" {
+	} else if function == "initEvent" {
 		log.Fatalf("step 1: ")
 		return s.initEvent(APIstub)
 	} else if function == "buyTicketFromSupplier" {
@@ -293,6 +292,8 @@ func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args
 }
 
 func main() {
+
+	// Create a new Smart Contract
 	err := shim.Start(new(SmartContract))
 	if err != nil {
 		fmt.Printf("Error creating new Smart Contract: %s", err)
