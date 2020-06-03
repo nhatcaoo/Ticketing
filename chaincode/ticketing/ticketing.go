@@ -41,35 +41,37 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-	log.Fatalf("Invoke 1  : ")
-	log.Fatalf("go: ")
-	function, args := APIstub.GetFunctionAndParameters()
+	log.Fatalf("Invoke 1  : \n ")
+	log.Fatalf("go: \n")
+	//function, args := APIstub.GetFunctionAndParameters()
+	log.Fatalf("Invoke2: \n")
+	//log.Fatalf(function)
 	log.Fatalf("Invoke2: ")
-	log.Fatalf(function)
-
-	if function == "queryTicket" {
-		return s.queryTicket(APIstub, args)
-	} else if function == "init1Event" {
-		log.Fatalf("step 1: ")
-		return s.initEvent(APIstub)
-	} else if function == "buyTicketFromSupplier" {
-		return s.buyTicketFromSupplier(APIstub, args)
-	} else if function == "buyTicketFromFromSecondaryMarket" {
-		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
-	} else if function == "queryAllTicket" {
-		return s.queryAllTicket(APIstub, args)
-	} else if function == "createEvent" {
-		return s.createEvent(APIstub, args)
-	} else if function == "upTicketToSecondaryMarket" {
-		return s.upTicketToSecondaryMarket(APIstub, args)
-	} else if function == "removeTicketFromSecondaryMarket" {
-		return s.removeTicketFromSecondaryMarket(APIstub, args)
-	} else if function == "redeemTicket" {
-		return s.redeemTicket(APIstub, args)
-	} else if function == "checkoutTicket" {
-		return s.checkoutTicket(APIstub, args)
-	}
-	return shim.Error("Wrong function name.")
+	log.Fatalf("Invoke2: ")
+	log.Fatalf("Invoke2: ")
+	// if function == "queryTicket" {
+	// 	return s.queryTicket(APIstub, args)
+	// } else if function == "init1Event" {
+	// 	log.Fatalf("step 1: ")
+	// 	return s.initEvent(APIstub)
+	// } else if function == "buyTicketFromSupplier" {
+	// 	return s.buyTicketFromSupplier(APIstub, args)
+	// } else if function == "buyTicketFromFromSecondaryMarket" {
+	// 	return s.buyTicketFromFromSecondaryMarket(APIstub, args)
+	// } else if function == "queryAllTicket" {
+	// 	return s.queryAllTicket(APIstub, args)
+	// } else if function == "createEvent" {
+	// 	return s.createEvent(APIstub, args)
+	// } else if function == "upTicketToSecondaryMarket" {
+	// 	return s.upTicketToSecondaryMarket(APIstub, args)
+	// } else if function == "removeTicketFromSecondaryMarket" {
+	// 	return s.removeTicketFromSecondaryMarket(APIstub, args)
+	// } else if function == "redeemTicket" {
+	// 	return s.redeemTicket(APIstub, args)
+	// } else if function == "checkoutTicket" {
+	// 	return s.checkoutTicket(APIstub, args)
+	// }
+	// return shim.Error("Wrong function name.")
 }
 func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
 	log.Fatalf("init: ")
