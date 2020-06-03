@@ -42,6 +42,7 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 }
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 	log.Fatalf("Invoke: ")
+	log.Fatalf("go: ")
 	function, args := APIstub.GetFunctionAndParameters()
 	log.Fatalf("Invoke2: ")
 	log.Fatalf(function)
