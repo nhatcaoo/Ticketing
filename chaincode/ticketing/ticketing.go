@@ -36,27 +36,5 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-	function, args := APIstub.GetFunctionAndParameters()
-	if function == "queryTicket" {
-		//	return s.queryTicket(APIstub, args)
-	} else if function == "initEvent" {
-		//	return s.initEvent(APIstub)
-	} else if function == "buyTicketFromSupplier" {
-		//	return s.buyTicketFromSupplier(APIstub, args)
-	} else if function == "buyTicketFromFromSecondaryMarket" {
-		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
-	} else if function == "queryAllTicket" {
-		return s.queryAllTicket(APIstub, args)
-	} else if function == "createEvent" {
-		return s.createEvent(APIstub, args)
-	} else if function == "upTicketToSecondaryMarket" {
-		return s.upTicketToSecondaryMarket(APIstub, args)
-	} else if function == "removeTicketFromSecondaryMarket" {
-		return s.removeTicketFromSecondaryMarket(APIstub, args)
-	} else if function == "redeemTicket" {
-		return s.redeemTicket(APIstub, args)
-	} else if function == "checkoutTicket" {
-		return s.checkoutTicket(APIstub, args)
-	}
-	return shim.Error("Wrong function name.")
+
 }
