@@ -89,7 +89,7 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 			var ticket = Ticket{EventId: events[j].ID, TicketId: strconv.Itoa(events[j].ID) + "-" + strconv.Itoa(i), Cost: events[j].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 			ticketAsBytes, _ := json.Marshal(ticket)
 			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
-			logger.Infof("-\n ")
+			logger.Infof(ticket.TicketId)
 		}
 		logger.Infof("-\n ")
 	}
@@ -109,11 +109,14 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	json.Unmarshal(thisEventAsBytes, &thisEvent)
 	var left = thisEvent.Total - thisEvent.Sold
 	num, _ := strconv.Atoi(args[1])
+	fmt.Printf(strconv.Itoa(num))
+	fmt.Printf((args[0]))
 	if num > left {
 		return shim.Error("Incorrect number of tickets. Expecting")
 	} else {
 		//ticketSet := []Ticket{}
 		for i := 0; i < num; i++ {
+			fmt.Printf("buy ticket - \n")
 			eventAsBytes, _ := APIstub.GetState(args[0])
 			var event = Event{}
 			json.Unmarshal(eventAsBytes, &event)
@@ -135,7 +138,7 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	var info = Info{}
 	numberAsBytes, _ := APIstub.GetState("NUMBER_EVENTS")
-
+	fmt.Printf(args[0])
 	json.Unmarshal(numberAsBytes, &info)
 	var number = info.number
 	total, _ := strconv.Atoi(args[3])
@@ -144,6 +147,7 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(event.ID) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 		ticketAsBytes, _ := json.Marshal(ticket)
 		APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
+		fmt.Printf("-\n")
 	}
 	number++
 	info.number = number
@@ -152,6 +156,8 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 	return shim.Success(nil)
 }
 func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	fmt.Printf(args[0])
+
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
@@ -161,6 +167,7 @@ func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInte
 	return shim.Success(nil)
 }
 func (s *SmartContract) removeTicketFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	fmt.Printf(args[0])
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
@@ -173,6 +180,7 @@ func (s *SmartContract) removeTicketFromSecondaryMarket(APIstub shim.ChaincodeSt
 	return shim.Success(nil)
 }
 func (s *SmartContract) redeemTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	fmt.Printf(args[0])
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
@@ -186,6 +194,7 @@ func (s *SmartContract) redeemTicket(APIstub shim.ChaincodeStubInterface, args [
 	return shim.Success(nil)
 }
 func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	fmt.Printf(args[0])
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
@@ -198,6 +207,7 @@ func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeS
 	return shim.Success(nil)
 }
 func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	fmt.Printf(args[0])
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
@@ -217,7 +227,7 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
-
+	fmt.Printf(args[0])
 	ticketAsBytes, _ := APIstub.GetState(args[0])
 	if ticketAsBytes == nil {
 		return shim.Error("Could not locate ticket")
@@ -225,9 +235,10 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 	return shim.Success(ticketAsBytes)
 
 }
-func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	var id = args[0]
-	var queryString = "{\"selector\":{\"Event.ID\":\"" + id + "\"}"
+	fmt.Printf(args[0])
+	var queryString = "{\r\n\"selector\":{\r\n\"eventId\":\"" + id + "\"\r\n}\r\n}"
 	resultsIterator, err := APIstub.GetQueryResult(queryString)
 	defer resultsIterator.Close()
 	if err != nil {
@@ -259,7 +270,7 @@ func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface, args 
 	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
 	return shim.Success(buffer.Bytes())
 }
-func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
 	//var id = args[0]
 	var queryString = "{\r\n\"selector\":{\r\n\"total\":{\r\n \"$gt\":0\r\n}\r\n}\r\n}"
 	resultsIterator, err := APIstub.GetQueryResult(queryString)
