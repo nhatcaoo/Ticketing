@@ -43,7 +43,7 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 var logger = shim.NewLogger("ticketing")
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
-
+	logger.Infof("start ")
 	function, args := APIstub.GetFunctionAndParameters()
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
