@@ -207,7 +207,7 @@ module.exports = (function () {
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
-      var order = fabric_client.newOrderer("grpc://localhost:7051");
+      var order = fabric_client.newOrderer("grpc://localhost:7050");
       channel.addOrderer(order);
 
       var member_user = null;
@@ -381,7 +381,7 @@ module.exports = (function () {
       var fabric_client = new Fabric_Client();
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
-      var order = fabric_client.newOrderer("grpc://localhost:7051");
+      var order = fabric_client.newOrderer("grpc://localhost:7050");
       channel.addOrderer(order);
 
       var member_user = null;
