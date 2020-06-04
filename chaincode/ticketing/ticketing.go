@@ -80,13 +80,13 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 		Event{ID: 3, Issuer: "DFF", Price: "220.000", EventName: "D cup", Total: 20, Sold: 0},
 		Event{ID: 4, Issuer: "EFF", Price: "220.000", EventName: "F cup", Total: 20, Sold: 0}}
 	logger.Infof("done2 ")
-	
-	for j := 0; j < 5: j++ {
+
+	for j := 0; j < 5; j++ {
 		eventAsBytes, _ := json.Marshal(events[j])
 		APIstub.PutState("EVENT"+strconv.Itoa(events[j].ID), eventAsBytes)
 		for i := 0; i < events[j].Total; i++ {
 
-			var ticket = Ticket{EventId: events[i].ID, TicketId: strconv.Itoa(events[i].ID) + "-" + strconv.Itoa(i), Cost: events[i].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
+			var ticket = Ticket{EventId: events[j].ID, TicketId: strconv.Itoa(events[j].ID) + "-" + strconv.Itoa(i), Cost: events[j].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 			ticketAsBytes, _ := json.Marshal(ticket)
 			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
 			logger.Infof("-\n " + i)
