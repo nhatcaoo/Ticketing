@@ -45,6 +45,7 @@ var logger = shim.NewLogger("ticketing")
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 	logger.Infof("start ")
 	function, args := APIstub.GetFunctionAndParameters()
+	fmt.Printf(args)
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
@@ -57,6 +58,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
 	} else if function == "queryAllTicket" {
 		return s.queryAllTicket(APIstub, args)
+	} else if function == "queryAllEvent" {
+		return s.queryAllEvent(APIstub, args)
 	} else if function == "createEvent" {
 		return s.createEvent(APIstub, args)
 	} else if function == "upTicketToSecondaryMarket" {
@@ -227,8 +230,12 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
-	fmt.Printf(args[0])
-	ticketAsBytes, _ := APIstub.GetState(args[0])
+	var id = args[0]
+	if id == nil {
+		id = "TICKET1-1"
+	}
+	fmt.Printf("ID: " + args[0])
+	ticketAsBytes, _ := APIstub.GetState(id)
 	if ticketAsBytes == nil {
 		return shim.Error("Could not locate ticket")
 	}
