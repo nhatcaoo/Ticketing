@@ -57,9 +57,9 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	} else if function == "buyTicketFromFromSecondaryMarket" {
 		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
 	} else if function == "queryAllTicket" {
-		return s.queryAllTicket(APIstub)
+		return s.queryAllTicket(APIstub, args)
 	} else if function == "queryAllEvent" {
-		return s.queryAllEvent(APIstub, args)
+		return s.queryAllEvent(APIstub)
 	} else if function == "createEvent" {
 		return s.createEvent(APIstub, args)
 	} else if function == "upTicketToSecondaryMarket" {
