@@ -45,7 +45,7 @@ var logger = shim.NewLogger("ticketing")
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 	logger.Infof("start ")
 	function, args := APIstub.GetFunctionAndParameters()
-	fmt.Printf(args)
+
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
@@ -57,7 +57,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	} else if function == "buyTicketFromFromSecondaryMarket" {
 		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
 	} else if function == "queryAllTicket" {
-		return s.queryAllTicket(APIstub, args)
+		return s.queryAllTicket(APIstub)
 	} else if function == "queryAllEvent" {
 		return s.queryAllEvent(APIstub, args)
 	} else if function == "createEvent" {
