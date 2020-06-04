@@ -4,7 +4,7 @@ var ticketing = require('./controller.js');
 
 module.exports = function(app){
   app.get('/get_all_event/', function(req, res){
-    ticketing.get_ticket(req, res);
+    ticketing.get_all_event(req, res);
   });
   app.get('/get_ticket/:id', function(req, res){
     ticketing.get_ticket(req, res);
@@ -16,6 +16,6 @@ module.exports = function(app){
     ticketing.get_all_ticket(req, res);
   });
   app.get('/buyTicketFromSupplier/:info', function(req, res){
-    ticketing.change_holder(req, res);
+    ticketing.buyTicketFromSupplier(req, res);
   });
 }

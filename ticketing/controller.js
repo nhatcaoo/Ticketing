@@ -46,7 +46,7 @@ module.exports = (function () {
         const request = {
           chaincodeId: "ticketing",
           txId: tx_id,
-          fcn: "queryAllTicket",
+          fcn: "queryAllEvent",
           args: [''],
         };
 
@@ -184,7 +184,7 @@ module.exports = (function () {
           } else {
             console.log("No payloads were returned from query");
             res.send("Could not locate ticket");
-          }
+          }``
         })
         .catch((err) => {
           console.error("Failed to query successfully :: " + err);
@@ -194,7 +194,7 @@ module.exports = (function () {
     create_event: function (req, res) {
       console.log("CREATE EVENT ");
 
-      var array = req.params.info.split("-");
+      var array = req.params.event.split("-");
       console.log(array);
 
       var issuer = array[0];
