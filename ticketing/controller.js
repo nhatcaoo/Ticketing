@@ -380,6 +380,7 @@ module.exports = (function () {
       var owner = array[2];
 
       var fabric_client = new Fabric_Client();
+      var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
       var order = fabric_client.newOrderer("grpc://localhost:7050");
