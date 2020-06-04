@@ -231,7 +231,7 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 	var id = args[0]
-	if id == nil {
+	if id == "" {
 		id = "TICKET1-1"
 	}
 	fmt.Printf("ID: " + args[0])
