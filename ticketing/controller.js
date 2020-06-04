@@ -374,7 +374,7 @@ module.exports = (function () {
       var util = require("util");
       var os = require("os");
 
-      var array = req.params.info.split("-");
+      var array = req.params.info.split("_");
       var key = array[0];
       var number = array[1];
       var owner = array[2];
