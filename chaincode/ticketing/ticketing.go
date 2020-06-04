@@ -240,12 +240,11 @@ func (s *SmartContract) queryTicket(APIstub shim.ChaincodeStubInterface, args []
 		return shim.Error("Could not locate ticket")
 	}
 	return shim.Success(ticketAsBytes)
-
 }
 func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	var id = args[0]
+	//var id = args[0]
 	fmt.Printf(args[0])
-	var queryString = "{\r\n\"selector\":{\r\n\"eventId\":\"" + id + "\"\r\n}\r\n}"
+	var queryString = args[0]
 	resultsIterator, err := APIstub.GetQueryResult(queryString)
 	defer resultsIterator.Close()
 	if err != nil {

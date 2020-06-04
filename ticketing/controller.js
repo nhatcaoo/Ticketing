@@ -72,9 +72,10 @@ module.exports = (function () {
   },
     get_all_ticket: function (req, res) {
       console.log("getting all ticket of an event: ");
-      var key = req.params.id;
-      console.log("KEY:",key);
       var fabric_client = new Fabric_Client();
+      var key = req.params.id;
+      var query = "{\"selector\":{\"eventId\":\"" + key + "\"}}"
+      console.log("KEY:",key);   
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
@@ -108,7 +109,7 @@ module.exports = (function () {
             chaincodeId: "ticketing",
             txId: tx_id,
             fcn: "queryAllTicket",
-            args: [key],
+            args: [query],
           };
 
           return channel.queryByChaincode(request);
@@ -138,7 +139,6 @@ module.exports = (function () {
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
-
       var member_user = null;
       var store_path = path.join(os.homedir(), ".hfc-key-store");
       console.log("Store path:" + store_path);
