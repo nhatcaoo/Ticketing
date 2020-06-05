@@ -144,11 +144,11 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 	fmt.Printf(args[0])
 	json.Unmarshal(numberAsBytes, &info)
 	var number = info.number
-	fmt.Printf(number)
+	fmt.Printf(strconv.Itoa(number))
 	total, _ := strconv.Atoi(args[3])
 	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
 	eventAsBytes, _ := json.Marshal(event)
-	APIstub.PutState("EVENT"+strconv.Itoa(events.ID), eventAsBytes)
+	APIstub.PutState("EVENT"+strconv.Itoa(event.ID), eventAsBytes)
 	for i := 0; i < event.Total; i++ {
 		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(number) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 		ticketAsBytes, _ := json.Marshal(ticket)
