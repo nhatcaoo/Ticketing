@@ -97,11 +97,11 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 		logger.Infof("-\n ")
 	}
 	logger.Infof("done1 ")
-	var info = Info{}
+	info := Info{}
 	info.number = 5
 	infoAsBytes, _ := json.Marshal(info)
 	logger.Infof("done1 ")
-	APIstub.PutState("NUMBER_EVENTS", infoAsBytes)
+	APIstub.PutState("NUM", infoAsBytes)
 	logger.Infof("done1 ")
 	return shim.Success(nil)
 }
@@ -139,26 +139,32 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	return shim.Success(nil)
 }
 func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	var info = Info{}
-	numberAsBytes, _ := APIstub.GetState("NUMBER_EVENTS")
-	fmt.Printf(args[0])
+
+	info := Info{}
+	numberAsBytes, _ := APIstub.GetState("NUM")
+	if numberAsBytes == nil {
+		return shim.Error("Could not locate number of events")
+	}
+
 	json.Unmarshal(numberAsBytes, &info)
-	var number = info.number
-	fmt.Printf(strconv.Itoa(number))
+
+	fmt.Printf(strconv.Itoa(info.number))
 	total, _ := strconv.Atoi(args[3])
-	var event = Event{ID: number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
+	var event = Event{ID: info.number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
 	eventAsBytes, _ := json.Marshal(event)
 	APIstub.PutState("EVENT"+strconv.Itoa(event.ID), eventAsBytes)
 	for i := 0; i < event.Total; i++ {
-		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(number) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
+		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(info.number) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 		ticketAsBytes, _ := json.Marshal(ticket)
 		APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
-		fmt.Printf("-\n")
+		logger.Infof(ticket.TicketId)
 	}
-	number++
-	info.number = number
+
+	info.number++
+	logger.Infof(strconv.Itoa(info.number))
+	fmt.Printf(strconv.Itoa(info.number))
 	numberAsBytes, _ = json.Marshal(info)
-	APIstub.PutState("NUMBER_EVENTS", numberAsBytes)
+	APIstub.PutState("NUM", numberAsBytes)
 	return shim.Success(nil)
 }
 func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
