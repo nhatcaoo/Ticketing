@@ -30,7 +30,9 @@
         width: 50%;
       }
       #body {
-        margin-left: 3%;
+        width: 70%;
+
+        margin-left: 10%;
         margin-right: 3%;
       }
       .form-control {
@@ -70,8 +72,7 @@
     <header>
       <div id="left_header">Ticketing</div>
       <i id="right_header"
-        >Example Blockchain Application for Introduction to Hyperledger Fabric
-        LFS171x</i
+        ></i
       >
     </header>
 
@@ -153,7 +154,7 @@
             <input
               id="buyTicket"  
               type="submit"
-              value="Query"
+              value="Buy Ticket"
               class="btn btn-primary"
               ng-click="buyTicket()"
             />
@@ -201,9 +202,11 @@
           <td>{{get_ticket.eventId}}</td>
         </tr>
       </table>
-
+<br>
+<br>
+<br>
       <div class="form-group">
-        <label>Create Event</label>
+        <h2>Create Event</h2>
         <h5 style="color: green; margin-bottom: 2%;" id="success_create">
           Success! Tx ID: {{create_tuna}}
         </h5>
