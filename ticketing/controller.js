@@ -11,71 +11,71 @@ var os = require("os");
 module.exports = (function () {
   return {
     get_all_event: function (req, res) {
-    console.log("getting all event: ");
-   
-    var fabric_client = new Fabric_Client();
-    var channel = fabric_client.newChannel("mychannel");
-    var peer = fabric_client.newPeer("grpc://localhost:7051");
-    channel.addPeer(peer);
+      console.log("getting all event: ");
 
-    member_user = null;
-    var store_path = path.join(os.homedir(), ".hfc-key-store");
-    console.log("Store path:" + store_path);
-    var tx_id = null;
+      var fabric_client = new Fabric_Client();
+      var channel = fabric_client.newChannel("mychannel");
+      var peer = fabric_client.newPeer("grpc://localhost:7051");
+      channel.addPeer(peer);
 
-    Fabric_Client.newDefaultKeyValueStore({ path: store_path })
-      .then((state_store) => {
-        fabric_client.setStateStore(state_store);
-        var crypto_suite = Fabric_Client.newCryptoSuite();
-        var crypto_store = Fabric_Client.newCryptoKeyStore({
-          path: store_path,
-        });
-        crypto_suite.setCryptoKeyStore(crypto_store);
-        fabric_client.setCryptoSuite(crypto_suite);
+      member_user = null;
+      var store_path = path.join(os.homedir(), ".hfc-key-store");
+      console.log("Store path:" + store_path);
+      var tx_id = null;
 
-        return fabric_client.getUserContext("user1", true);
-      })
-      .then((user_from_store) => {
-        if (user_from_store && user_from_store.isEnrolled()) {
-          console.log("Successfully loaded user1 from persistence");
-          member_user = user_from_store;
-        } else {
-          throw new Error("Failed to get user1.... run registerUser.js");
-        }
+      Fabric_Client.newDefaultKeyValueStore({ path: store_path })
+        .then((state_store) => {
+          fabric_client.setStateStore(state_store);
+          var crypto_suite = Fabric_Client.newCryptoSuite();
+          var crypto_store = Fabric_Client.newCryptoKeyStore({
+            path: store_path,
+          });
+          crypto_suite.setCryptoKeyStore(crypto_store);
+          fabric_client.setCryptoSuite(crypto_suite);
 
-        const request = {
-          chaincodeId: "ticketing",
-          txId: tx_id,
-          fcn: "queryAllEvent",
-          args: [''],
-        };
-
-        return channel.queryByChaincode(request);
-      })
-      .then((query_responses) => {
-        console.log("Query has completed, checking results");
-
-        if (query_responses && query_responses.length == 1) {
-          if (query_responses[0] instanceof Error) {
-            console.error("error from query = ", query_responses[0]);
+          return fabric_client.getUserContext("user1", true);
+        })
+        .then((user_from_store) => {
+          if (user_from_store && user_from_store.isEnrolled()) {
+            console.log("Successfully loaded user1 from persistence");
+            member_user = user_from_store;
           } else {
-            console.log("Response is ", query_responses[0].toString());
-            res.json(JSON.parse(query_responses[0].toString()));
+            throw new Error("Failed to get user1.... run registerUser.js");
           }
-        } else {
-          console.log("No payloads were returned from query");
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to query :: " + err);
-      });
-  },
+
+          const request = {
+            chaincodeId: "ticketing",
+            txId: tx_id,
+            fcn: "queryAllEvent",
+            args: [""],
+          };
+
+          return channel.queryByChaincode(request);
+        })
+        .then((query_responses) => {
+          console.log("Query has completed, checking results");
+
+          if (query_responses && query_responses.length == 1) {
+            if (query_responses[0] instanceof Error) {
+              console.error("error from query = ", query_responses[0]);
+            } else {
+              console.log("Response is ", query_responses[0].toString());
+              res.json(JSON.parse(query_responses[0].toString()));
+            }
+          } else {
+            console.log("No payloads were returned from query");
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to query :: " + err);
+        });
+    },
     get_all_ticket: function (req, res) {
       console.log("getting all ticket of an event: ");
       var fabric_client = new Fabric_Client();
       var key = req.params.id;
-      var query = "{\"selector\":{\"eventId\":\"1\"}}"
-      console.log("KEY:",key);   
+      var query = '{"selector":{"eventId":"1"}}';
+      console.log("KEY:", key);
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
@@ -185,7 +185,8 @@ module.exports = (function () {
           } else {
             console.log("No payloads were returned from query");
             res.send("Could not locate ticket");
-          }``
+          }
+          ``;
         })
         .catch((err) => {
           console.error("Failed to query successfully :: " + err);
@@ -245,7 +246,6 @@ module.exports = (function () {
             chainId: "mychannel",
             txId: tx_id,
           };
-          
 
           return channel.sendTransactionProposal(request);
         })
@@ -531,4 +531,5 @@ module.exports = (function () {
         });
     },
   };
+  
 })();

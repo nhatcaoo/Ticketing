@@ -10,7 +10,21 @@ app.controller("appController", function ($scope, appFactory) {
   $("#success_create").hide();
   $("#error_holder").hide();
   $("#error_query").hide();
-
+  
+  $scope.get_all_event = function () {
+    appFactory.get_all_event(function (data) {
+      var array = [];
+      for (var i = 0; i < data.length; i++) {
+        parseInt(data[i].Key);
+        data[i].Record.Key = parseInt(data[i].Key);
+        array.push(data[i].Record);
+      }
+      array.sort(function (a, b) {
+        return parseFloat(a.Key) - parseFloat(b.Key);
+      });
+      $scope.all_event = array;
+    });
+  };
   $scope.get_all_ticket = function () {
     appFactory.get_all_ticket(function (data) {
       var array = [];
@@ -26,20 +40,7 @@ app.controller("appController", function ($scope, appFactory) {
     });
   };
 
-  $scope.get_all_event = function () {
-    appFactory.get_all_event(function (data) {
-      var array = [];
-      for (var i = 0; i < data.length; i++) {
-        parseInt(data[i].Key);
-        data[i].Record.Key = parseInt(data[i].Key);
-        array.push(data[i].Record);
-      }
-      array.sort(function (a, b) {
-        return parseFloat(a.Key) - parseFloat(b.Key);
-      });
-      $scope.all_event = array;
-    });
-  };
+ 
   $scope.get_ticket = function () {
     var id = $scope.tuna_id;
 
