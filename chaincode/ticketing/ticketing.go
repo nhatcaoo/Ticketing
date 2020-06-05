@@ -46,7 +46,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	logger.Infof("start ")
 	function, args := APIstub.GetFunctionAndParameters()
 
-	info := Info{number: 5}
+	info := Info{Number: 5}
 	infoAsBytes, _ := json.Marshal(info)
 	APIstub.PutState("NUM", infoAsBytes)
 
@@ -156,15 +156,15 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 	eventAsBytes, _ := json.Marshal(event)
 	APIstub.PutState("EVENT"+strconv.Itoa(event.ID), eventAsBytes)
 	for i := 0; i < event.Total; i++ {
-		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(info.number) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
+		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(info.Number) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
 		ticketAsBytes, _ := json.Marshal(ticket)
 		APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
 		logger.Infof(ticket.TicketId)
 	}
 
-	info.number++
-	logger.Infof(strconv.Itoa(info.number))
-	fmt.Printf(strconv.Itoa(info.number))
+	info.Number++
+	logger.Infof(strconv.Itoa(info.Number))
+	fmt.Printf(strconv.Itoa(info.Number))
 	numberAsBytes, _ = json.Marshal(info)
 	APIstub.PutState("NUM", numberAsBytes)
 	return shim.Success(nil)
