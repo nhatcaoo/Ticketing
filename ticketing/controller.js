@@ -74,7 +74,7 @@ module.exports = (function () {
       console.log("getting all ticket of an event: ");
       var fabric_client = new Fabric_Client();
       var key = req.params.id;
-      var query = "{\"selector\":{\"Ticket.eventId\":\"1\"}}";
+      var query = "{\"selector\":{\"Ticket.isRedeemed\":\"false\"}}";
       console.log("KEY:", key);
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
