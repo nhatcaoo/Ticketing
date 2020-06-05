@@ -10,8 +10,8 @@ app.controller("appController", function ($scope, appFactory) {
   $("#error_holder").hide();
   $("#error_query").hide();
   
-  $scope.get_all_event = function () {
-    appFactory.get_all_event(function (data) {
+  $scope.getAllEvent = function () {
+    appFactory.getAllEvent(function (data) {
       var array = [];
       console.log("data: ",data)
       for (var i = 0; i < data.length; i++) {
@@ -83,7 +83,7 @@ app.controller("appController", function ($scope, appFactory) {
 app.factory("appFactory", function ($http) {
   var factory = {};
 
-  factory.get_all_event = function (callback) {
+  factory.getAllEvent = function (callback) {
     $http.get("/get_all_event/").success(function (output) {
       console.log("output: ",output)
       callback(output);
