@@ -48,8 +48,10 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 	info := Info{Number: 5}
 	infoAsBytes, _ := json.Marshal(info)
-	APIstub.PutState("NUM", infoAsBytes)
-
+	err = APIstub.PutState("NUM", infoAsBytes)
+	if err != nil {
+		return shim.Error(fmt.Sprintf("Failed to add num: "))
+	}
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
@@ -166,7 +168,10 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 	logger.Infof(strconv.Itoa(info.Number))
 	fmt.Printf(strconv.Itoa(info.Number))
 	numberAsBytes, _ = json.Marshal(info)
-	APIstub.PutState("NUM", numberAsBytes)
+	err := APIstub.PutState("NUM", numberAsBytes)
+	if err != nil {
+		return shim.Error(fmt.Sprintf("Failed to add num: "))
+	}
 	return shim.Success(nil)
 }
 func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {

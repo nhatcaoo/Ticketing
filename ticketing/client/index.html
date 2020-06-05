@@ -140,6 +140,7 @@
           <th>Check-out Status</th>
           <th>Status</th>
           <th>log time</th>
+          <th></th>
         </tr>
 
         <tr ng-repeat="ticket in all_ticket">
@@ -148,6 +149,15 @@
           <td>{{ticket.isRedeemed}}</td>
           <td>{{ticket.onSell}}</td>
           <td>{{ticket.timeStamp}}</td>
+          <td> <p>
+            <input
+              id="buyTicket"  
+              type="submit"
+              value="Query"
+              class="btn btn-primary"
+              ng-click="buyTicket()"
+            />
+          </p></td>
         </tr>
       </table>
 <br>
