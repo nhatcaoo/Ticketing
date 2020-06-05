@@ -28,6 +28,7 @@ app.controller("appController", function ($scope, appFactory) {
   };
   $scope.queryAllTicket = function () {
     appFactory.queryAllTicket(function (data) {
+      console.log(data)
       var array = [];
       for (var i = 0; i < data.length; i++) {
         parseInt(data[i].Key);
