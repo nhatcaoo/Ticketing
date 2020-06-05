@@ -65,6 +65,7 @@ app.controller("appController", function ($scope, appFactory) {
   $scope.recordEvent = function () {
     appFactory.recordEvent($scope.event, function (data) {
       $scope.create_event = data;
+      console.log(data)
       $("#success_create").show();
     });
   };
