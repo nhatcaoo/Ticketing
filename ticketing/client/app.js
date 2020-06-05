@@ -14,11 +14,13 @@ app.controller("appController", function ($scope, appFactory) {
   $scope.get_all_event = function () {
     appFactory.get_all_event(function (data) {
       var array = [];
+      console.log("data: ",data)
       for (var i = 0; i < data.length; i++) {
         parseInt(data[i].Key);
         data[i].Record.Key = parseInt(data[i].Key);
         array.push(data[i].Record);
       }
+      console.log("a")
       array.sort(function (a, b) {
         return parseFloat(a.Key) - parseFloat(b.Key);
       });
@@ -84,6 +86,7 @@ app.factory("appFactory", function ($http) {
 
   factory.get_all_event = function (callback) {
     $http.get("/get_all_event/").success(function (output) {
+      console.log("output: ",output)
       callback(output);
     });
   };
