@@ -33,7 +33,7 @@ type Ticket struct {
 	IsRedeemed   bool      `json:"isRedeemed"`
 }
 type Info struct {
-	number int `json:"number"`
+	Number int `json:"number"`
 }
 
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
@@ -45,6 +45,10 @@ var logger = shim.NewLogger("ticketing")
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 	logger.Infof("start ")
 	function, args := APIstub.GetFunctionAndParameters()
+
+	info := Info{number: 5}
+	infoAsBytes, _ := json.Marshal(info)
+	APIstub.PutState("NUM", infoAsBytes)
 
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
@@ -97,11 +101,6 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 		logger.Infof("-\n ")
 	}
 	logger.Infof("done1 ")
-	info := Info{}
-	info.number = 5
-	infoAsBytes, _ := json.Marshal(info)
-	logger.Infof("done1 ")
-	APIstub.PutState("NUM", infoAsBytes)
 	logger.Infof("done1 ")
 	return shim.Success(nil)
 }
@@ -140,20 +139,20 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 }
 func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
-	info := Info{}
 	numberAsBytes, _ := APIstub.GetState("NUM")
 	str := string(numberAsBytes)
-	logger.Infof(str)
-	fmt.Printf(str)
+	logger.Infof("number as byte:" + str)
+	fmt.Printf("number as byte:" + str)
 	if numberAsBytes == nil {
 		return shim.Error("Could not locate number of events")
 	}
+	info := Info{}
 
 	json.Unmarshal(numberAsBytes, &info)
 
-	fmt.Printf(strconv.Itoa(info.number))
+	fmt.Printf(strconv.Itoa(info.Number))
 	total, _ := strconv.Atoi(args[3])
-	var event = Event{ID: info.number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
+	var event = Event{ID: info.Number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
 	eventAsBytes, _ := json.Marshal(event)
 	APIstub.PutState("EVENT"+strconv.Itoa(event.ID), eventAsBytes)
 	for i := 0; i < event.Total; i++ {
