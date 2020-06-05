@@ -139,14 +139,15 @@
           <th>Current Owner</th>
           <th>Check-out Status</th>
           <th>Status</th>
+          <th>log time</th>
         </tr>
 
         <tr ng-repeat="ticket in all_ticket">
-          <td>{{tuna.Key}}</td>
-          <td>{{tuna.timestamp}}</td>
-          <td>{{tuna.holder}}</td>
-          <td>{{tuna.location}}</td>
-          <td>{{tuna.vessel}}</td>
+          <td>{{ticket.ticketId}}</td>
+          <td>{{ticket.currentOwner}}</td>
+          <td>{{ticket.isRedeemed}}</td>
+          <td>{{ticket.onSell}}</td>
+          <td>{{ticket.timeStamp}}</td>
         </tr>
       </table>
 <br>
