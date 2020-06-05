@@ -74,7 +74,7 @@ module.exports = (function () {
       console.log("getting all ticket of an event: ");
       var fabric_client = new Fabric_Client();
       var key = req.params.id;
-      var query = "{\r\n\"selector\":{\r\n\"total\":{\r\n \"$gt\":0\r\n}\r\n}\r\n}";
+      var query = "{\r\n\"selector\":{\r\n\"eventId\":\"1\"\r\n}\r\n}";
       console.log("KEY:", key);
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
