@@ -26,6 +26,7 @@ app.controller("appController", function ($scope, appFactory) {
       $scope.all_event = array;
     });
   };
+  
   $scope.getAllTicket = function () {
     var id = $scope.event_id;
     appFactory.getAllTicket(id,function (data) {
@@ -107,12 +108,12 @@ app.factory("appFactory", function ($http) {
 
   factory.create_event = function (data, callback) {
     var event =
+      data.name +
+      "_" +
       data.issuer +
-      "-" +
+      "_" +
       data.price +
-      "-" +
-      data.eventName +
-      "-" +
+      "_" +
       data.total;
 
     $http.get("/create_event/" + event).success(function (output) {

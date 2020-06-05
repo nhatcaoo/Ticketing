@@ -198,56 +198,43 @@
           Success! Tx ID: {{create_tuna}}
         </h5>
         <br />
-        Enter catch id:
+        Enter Even Name:
         <input
           class="form-control"
           type="text"
           placeholder="Ex: 11"
-          ng-model="tuna.id"
+          ng-model="event.name"
         />
-        Enter name of vessel:
+        Enter Issuer:
         <input
           class="form-control"
           type="text"
           placeholder="Ex: 0239L"
-          ng-model="tuna.vessel"
+          ng-model="event.issuer"
         />
-        Enter longitude:
+        Enter Price:
         <input
           id="createName"
           class="form-control"
           type="text"
           placeholder="Ex: 28.012"
-          ng-model="tuna.longitude"
+          ng-model="event.price"
         />
-        Enter latitude:
+        Enter total:
         <input
           id="createName"
           class="form-control"
           type="text"
           placeholder="Ex: 150.405"
-          ng-model="tuna.latitude"
+          ng-model="event.total"
         />
-        Enter timestamp:
-        <input
-          class="form-control"
-          type="text"
-          placeholder="Ex: 4982342301"
-          ng-model="tuna.timestamp"
-        />
-        Enter name of holder:
-        <input
-          class="form-control"
-          type="text"
-          placeholder="Ex: Hansel"
-          ng-model="tuna.holder"
-        />
+
         <input
           id="createSubmit"
           type="submit"
           value="Create"
           class="btn btn-primary"
-          ng-click="recordTuna()"
+          ng-click="recordEvent()"
         />
       </div>
 
