@@ -62,8 +62,8 @@ app.controller("appController", function ($scope, appFactory) {
     });
   };
 
-  $scope.create_event = function () {
-    appFactory.create_event($scope.event, function (data) {
+  $scope.recordEvent = function () {
+    appFactory.recordEvent($scope.event, function (data) {
       $scope.create_event = data;
       $("#success_create").show();
     });
@@ -106,7 +106,7 @@ app.factory("appFactory", function ($http) {
     });
   };
 
-  factory.create_event = function (data, callback) {
+  factory.recordEvent = function (data, callback) {
     var event =
       data.name +
       "_" +
