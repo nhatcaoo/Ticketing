@@ -142,8 +142,9 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 
 	info := Info{}
 	numberAsBytes, _ := APIstub.GetState("NUM")
-	logger.Infof(numberAsBytes)
-	fmt.Printf(numberAsBytes)
+	str := string(numberAsBytes)
+	logger.Infof(str)
+	fmt.Printf(str)
 	if numberAsBytes == nil {
 		return shim.Error("Could not locate number of events")
 	}
