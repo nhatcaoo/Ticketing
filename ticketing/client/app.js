@@ -3,7 +3,6 @@
 "use strict";
 
 var app = angular.module("application", []);
-var controller = require("../controller.js");
 // Angular Controller
 app.controller("appController", function ($scope, appFactory) {
   $("#success_holder").hide();
@@ -44,7 +43,7 @@ app.controller("appController", function ($scope, appFactory) {
 
  
   $scope.get_ticket = function () {
-    var id = $scope.tuna_id;
+    var id = $scope.ticket_id;
 
     appFactory.get_ticket(id, function (data) {
       $scope.get_ticket = data;

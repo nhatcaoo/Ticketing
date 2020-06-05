@@ -153,41 +153,41 @@
 <br>
 <br>
       <div class="form-group">
-        <h2>Query a Specific Tuna Catch</h2><br />
+        <h2>Query a Specific Ticket</h2><br />
         <h5 style="color: red; margin-bottom: 2%;" id="error_query">
-          Error: Please enter a valid Tuna Id
+          Error: Please enter a valid Ticket Id
         </h5>
 
-        Enter a catch number:
+        Enter a Ticket Id:
         <input
           id="createName"
           class="form-control"
           type="text"
           placeholder="Ex: 3"
-          ng-model="tuna_id"
+          ng-model="ticket_id"
         />
         <input
           id="querySubmit"
           type="submit"
           value="Query"
           class="btn btn-primary"
-          ng-click="queryTuna()"
+          ng-click="get_ticket()"
         />
       </div>
 
-      <table id="query_tuna" class="table" align="center">
+      <table id="get_ticket" class="table" align="center">
         <tr>
-          <th>Timestamp</th>
-          <th>Holder</th>
-          <th>Catch Location <br />(Longitude, Latitude)</th>
-          <th>Vessel</th>
+          <th>ID</th>
+          <th>Current Owner</th>
+          <th>Check-out Status</th>
+          <th>Status</th>
         </tr>
 
         <tr>
-          <td>{{query_tuna.timestamp}}</td>
-          <td>{{query_tuna.holder}}</td>
-          <td>{{query_tuna.location}}</td>
-          <td>{{query_tuna.vessel}}</td>
+          <td>{{get_ticket.ticketId}}</td>
+          <td>{{get_ticket.currentOwner}}</td>
+          <td>{{get_ticket.timeStamp}}</td>
+          <td>{{get_ticket.eventId}}</td>
         </tr>
       </table>
 
