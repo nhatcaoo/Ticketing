@@ -26,8 +26,8 @@ app.controller("appController", function ($scope, appFactory) {
       $scope.all_event = array;
     });
   };
-  $scope.get_all_ticket = function () {
-    appFactory.get_all_ticket(function (data) {
+  $scope.queryAllTicket = function () {
+    appFactory.queryAllTicket(function (data) {
       var array = [];
       for (var i = 0; i < data.length; i++) {
         parseInt(data[i].Key);
@@ -89,7 +89,7 @@ app.factory("appFactory", function ($http) {
       callback(output);
     });
   };
-  factory.get_all_ticket = function (id, callback) {
+  factory.queryAllTicket = function (id, callback) {
     $http.get("/get_all_ticket/" + id).success(function (output) {
       callback(output);
     });
