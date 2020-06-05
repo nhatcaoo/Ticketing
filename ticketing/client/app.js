@@ -42,10 +42,10 @@ app.controller("appController", function ($scope, appFactory) {
   };
 
  
-  $scope.get_ticket = function () {
+  $scope.getTicket = function () {
     var id = $scope.ticket_id;
 
-    appFactory.get_ticket(id, function (data) {
+    appFactory.getTicket(id, function (data) {
       $scope.get_ticket = data;
 
       if ($scope.get_ticket == "Could not locate ticket") {
@@ -94,8 +94,9 @@ app.factory("appFactory", function ($http) {
       callback(output);
     });
   };
-  factory.get_ticket = function (id, callback) {
+  factory.getTicket = function (id, callback) {
     $http.get("/get_ticket/" + id).success(function (output) {
+      console.log("ok")
       callback(output);
     });
   };
