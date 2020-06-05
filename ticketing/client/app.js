@@ -123,7 +123,7 @@ app.factory("appFactory", function ($http) {
   };
 
   factory.buyTicketFromSupplier = function (data, callback) {
-    var info = data.key + "-" + data.number + "-" + data.owner;
+    var info = data.key + "_" + data.number + "_" + data.owner;
 
     $http.get("/buyTicketFromSupplier/" + info).success(function (output) {
       callback(output);
