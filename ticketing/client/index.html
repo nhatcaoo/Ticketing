@@ -81,11 +81,11 @@
         
         <p>
           <input
-            id="get_all_event"
+            id="getAllEvent"
             type="submit"
             value="Query"
             class="btn btn-primary"
-            ng-click="get_all_event()"
+            ng-click="getAllEvent()"
           />
         </p>
       </div>
@@ -102,11 +102,11 @@
 
         <tr ng-repeat="event in all_event">
           <td>{{event.id}}</td>
-          <td>{{event.name}}</td>
+          <td>{{event.eventName}}</td>
           <td>{{event.issuer}}</td>
-          <td>{{tuna.price}}</td>
-          <td>{{tuna.total}}</td>
-          <td>{{tuna.sold}}</td>
+          <td>{{event.price}}</td>
+          <td>{{event.total}}</td>
+          <td>{{event.sold}}</td>
         </tr>
       </table>
 <br>
