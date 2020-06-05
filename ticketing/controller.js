@@ -538,12 +538,12 @@ module.exports = (function () {
       var util = require("util");
       var os = require("os");
 
-      var array = req.params.info.split("_");
+      var array = req.params.event.split("_");
       var name = array[0];
       var issuer = array[1];
       var price = array[2];
       var total = array[3];
-
+      console.log(array)
       var fabric_client = new Fabric_Client();
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
