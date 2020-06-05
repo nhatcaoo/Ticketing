@@ -196,7 +196,7 @@ module.exports = (function () {
     create_event: function (req, res) {
       console.log("CREATE EVENT ");
 
-      var array = req.params.event.split("-");
+      var array = req.params.event.split("_");
       console.log(array);
 
       var issuer = array[0];
