@@ -367,7 +367,7 @@ module.exports = (function () {
         });
     },
 
-    buyTicketFromSupplier: function (req, res) {
+    buy_ticket_from_supplier: function (req, res) {
       console.log("Change current owner of a ticket: ");
 
       var Fabric_Client = require("fabric-client");
