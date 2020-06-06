@@ -9,44 +9,42 @@ app.controller("appController", function ($scope, appFactory) {
   $("#success_create").hide();
   $("#error_holder").hide();
   $("#error_query").hide();
-  
+
   $scope.getAllEvent = function () {
     appFactory.getAllEvent(function (data) {
       var array = [];
-      console.log("data: ",data)
+      console.log("data: ", data);
       for (var i = 0; i < data.length; i++) {
         parseInt(data[i].Key);
         data[i].Record.Key = parseInt(data[i].Key);
         array.push(data[i].Record);
       }
-      console.log("a")
+      console.log("a");
       array.sort(function (a, b) {
         return parseFloat(a.Key) - parseFloat(b.Key);
       });
       $scope.all_event = array;
     });
   };
-  
+
   $scope.getAllTicket = function () {
     var id = $scope.event_id;
-    appFactory.getAllTicket(id,function (data) {
+    appFactory.getAllTicket(id, function (data) {
       var array = [];
-      console.log("data: ",data)
+      console.log("data: ", data);
       for (var i = 0; i < data.length; i++) {
         parseInt(data[i].Key);
         data[i].Record.Key = parseInt(data[i].Key);
         array.push(data[i].Record);
       }
-      console.log("a")
+      console.log("a");
       array.sort(function (a, b) {
         return parseFloat(a.Key) - parseFloat(b.Key);
       });
       $scope.all_ticket = array;
     });
-    
   };
 
- 
   $scope.getTicket = function () {
     var id = $scope.ticket_id;
 
@@ -65,7 +63,7 @@ app.controller("appController", function ($scope, appFactory) {
   $scope.recordEvent = function () {
     appFactory.recordEvent($scope.event, function (data) {
       $scope.create_event = data;
-      console.log(data)
+      console.log(data);
       $("#success_create").show();
     });
   };
@@ -73,7 +71,7 @@ app.controller("appController", function ($scope, appFactory) {
   $scope.buyTicketFromSupplier = function () {
     appFactory.buyTicketFromSupplier($scope.holder, function (data) {
       $scope.buy_ticket_from_supplier = data;
-      console.log(data)
+      console.log(data);
       if ($scope.buy_ticket_from_supplier == "Error: no tuna catch found") {
         $("#error_holder").show();
         $("#success_holder").hide();
@@ -83,7 +81,6 @@ app.controller("appController", function ($scope, appFactory) {
       }
     });
   };
-  
 });
 
 // Angular Factory
@@ -92,7 +89,7 @@ app.factory("appFactory", function ($http) {
 
   factory.getAllEvent = function (callback) {
     $http.get("/get_all_event/").success(function (output) {
-      console.log("output: ",output)
+      console.log("output: ", output);
       callback(output);
     });
   };
@@ -103,20 +100,14 @@ app.factory("appFactory", function ($http) {
   };
   factory.getTicket = function (id, callback) {
     $http.get("/get_ticket/" + id).success(function (output) {
-      console.log("ok")
+      console.log("ok");
       callback(output);
     });
   };
 
   factory.recordEvent = function (data, callback) {
     var event =
-      data.name +
-      "_" +
-      data.issuer +
-      "_" +
-      data.price +
-      "_" +
-      data.total;
+      data.name + "_" + data.issuer + "_" + data.price + "_" + data.total;
 
     $http.get("/create_event/" + event).success(function (output) {
       callback(output);
