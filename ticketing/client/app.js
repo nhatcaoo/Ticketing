@@ -72,9 +72,9 @@ app.controller("appController", function ($scope, appFactory) {
 
   $scope.buyTicketFromSupplier = function () {
     appFactory.buyTicketFromSupplier($scope.holder, function (data) {
-      $scope.buyTicketFromSupplier = data;
+      $scope.buy_ticket_from_supplier = data;
       console.log(data)
-      if ($scope.buyTicketFromSupplier == "Error: no tuna catch found") {
+      if ($scope.buy_ticket_from_supplier == "Error: no tuna catch found") {
         $("#error_holder").show();
         $("#success_holder").hide();
       } else {
@@ -126,7 +126,7 @@ app.factory("appFactory", function ($http) {
   factory.buyTicketFromSupplier = function (data, callback) {
     var holder = data.key + "_" + data.number + "_" + data.owner;
 
-    $http.get("/buyTicketFromSupplier/" + holder).success(function (output) {
+    $http.get("/buy_ticket_from_supplier/" + holder).success(function (output) {
       callback(output);
     });
   };
