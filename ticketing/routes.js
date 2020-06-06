@@ -15,7 +15,7 @@ module.exports = function(app){
   app.get('/get_all_ticket/:id', function(req, res){
     ticketing.get_all_ticket(req, res);
   });
-  app.get('/buyTicketFromSupplier/:info', function(req, res){
+  app.get('/buyTicketFromSupplier/:holder', function(req, res){
     ticketing.buyTicketFromSupplier(req, res);
   });
 }
