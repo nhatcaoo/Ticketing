@@ -418,7 +418,7 @@ module.exports = (function () {
             //targets : --- letting this default to the peers assigned to the channel
             chaincodeId: "ticketing",
             fcn: "buyTicketFromSupplier",
-            args: [key, number, holder, owner],
+            args: [key, number, owner],
             chainId: "mychannel",
             txId: tx_id,
           };
