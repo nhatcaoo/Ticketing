@@ -393,7 +393,7 @@ module.exports = (function () {
       var store_path = path.join(os.homedir(), ".hfc-key-store");
       console.log("Store path:" + store_path);
       var tx_id = null;
-      console.log("ok1\n");
+
       Fabric_Client.newDefaultKeyValueStore({ path: store_path })
         .then((state_store) => {
           fabric_client.setStateStore(state_store);
@@ -406,7 +406,6 @@ module.exports = (function () {
           return fabric_client.getUserContext("user1", true);
         })
         .then((user_from_store) => {
-
           if (user_from_store && user_from_store.isEnrolled()) {
             console.log("Successfully loaded user1 from persistence");
             member_user = user_from_store;
@@ -415,7 +414,6 @@ module.exports = (function () {
           }
           tx_id = fabric_client.newTransactionID();
           console.log("Assigning transaction_id: ", tx_id._transaction_id);
-          console.log("ok2\n");
           var request = {
             //targets : --- letting this default to the peers assigned to the channel
             chaincodeId: "ticketing",
@@ -424,12 +422,9 @@ module.exports = (function () {
             chainId: "mychannel",
             txId: tx_id,
           };
-          console.log("ok3\n");
           return channel.sendTransactionProposal(request);
-          
         })
         .then((results) => {
-          
           var proposalResponses = results[0];
           var proposal = results[1];
           let isProposalGood = false;
@@ -443,7 +438,7 @@ module.exports = (function () {
           } else {
             console.error("Transaction proposal was bad");
           }
-          console.log("ok4\n");
+
           if (isProposalGood) {
             console.log(
               util.format(
@@ -456,7 +451,6 @@ module.exports = (function () {
               proposalResponses: proposalResponses,
               proposal: proposal,
             };
-            console.log("ok5\n");
             var transaction_id_string = tx_id.getTransactionID();
             var promises = [];
             var sendPromise = channel.sendTransaction(request);
