@@ -374,11 +374,11 @@ module.exports = (function () {
       var util = require("util");
       var os = require("os");
       console.log(req.params.event)
-      var array = req.params.event.split("_");
-      var name = array[0];
-      var issuer = array[1];
-      var price = array[2];
-      var total = array[3];
+     // var array = req.params.event.split("_");
+      var name = "array[0]";
+      var issuer = "array[1]";
+      var price = "array[2]";
+      var total = 20;
       
       var fabric_client = new Fabric_Client();
       var channel = fabric_client.newChannel("mychannel");
