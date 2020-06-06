@@ -35,6 +35,9 @@
         margin-left: 10%;
         margin-right: 3%;
       }
+      .foot {
+        margin: 8px;
+      }
       .form-control {
         margin: 8px;
       }
@@ -47,6 +50,13 @@
         margin-left: 0;
         width: 40%;
         display: inline-block;
+      }
+      .slide-up {
+        bottom: 0px !important;
+      }
+
+      .slide-down {
+        bottom: -475px !important;
       }
       #id {
         width: 49%;
@@ -71,21 +81,19 @@
   <body ng-app="application" ng-controller="appController">
     <header>
       <div id="left_header">Ticketing</div>
-      <i id="right_header"
-        ></i
-      >
+      <i id="right_header"></i>
     </header>
 
     <div id="body">
       <div class="form-group">
         <h2>Show all events</h2>
-        
+
         <p>
           <input
             id="getAllEvent"
             type="submit"
             value="Query"
-            class="btn btn-primary"
+            class="btn btn-primary foot"
             ng-click="getAllEvent()"
           />
         </p>
@@ -98,7 +106,7 @@
           <th>Issuer</th>
           <th>Price</th>
           <th>Total</th>
-          <th>Sold</th>      
+          <th>Sold</th>
         </tr>
 
         <tr ng-repeat="event in all_event">
@@ -110,9 +118,9 @@
           <td>{{event.sold}}</td>
         </tr>
       </table>
-<br>
-<br>
-<br>
+      <br />
+      <br />
+      <br />
       <div class="form-group">
         <h2>Show all Ticket Information</h2>
         Please enter eventId:
@@ -125,7 +133,7 @@
         />
         <p>
           <input
-            id="getAllTicket"  
+            id="getAllTicket"
             type="submit"
             value="Query"
             class="btn btn-primary"
@@ -150,22 +158,64 @@
           <td>{{ticket.isRedeemed}}</td>
           <td>{{ticket.onSell}}</td>
           <td>{{ticket.timeStamp}}</td>
-          <td> <p>
-            <input
-              id="buyTicket"  
-              type="submit"
-              value="Buy Ticket"
-              class="btn btn-primary"
-              ng-click="buyTicket()"
-            />
-          </p></td>
+          <td>
+            <p>
+              <input
+                id="buyTicket"
+                type="submit"
+                value="Buy Ticket"
+                class="btn btn-primary foot"
+                ng-click="buyTicket()"
+              />
+            </p>
+          </td>
         </tr>
       </table>
-<br>
-<br>
-<br>
+      <br />
+      <br />
+      <br />
       <div class="form-group">
-        <h2>Query a Specific Ticket</h2><br />
+        <label>Change Ticket Holder</label><br />
+        <h5 style="color: green; margin-bottom: 2%;" id="success_holder">
+          Success! Tx ID: {{change_holder}}
+        </h5>
+        <h5 style="color: red; margin-bottom: 2%;" id="error_holder">
+          Error: Please enter a valid Tuna Id
+        </h5>
+        Enter a ticket id: 
+        <input
+          id = "ticketID"
+          class="form-control"
+          name="assetSelect"
+          placeholder="Ex: 1"
+          ng-model="ticket.id"
+        />
+        Enter name of new holder:
+        <input
+          class="form-control"
+          name="assetSelect"
+          placeholder="Ex: Barry"
+          ng-model="ticket.name"
+        />
+        Enter number:
+        <input
+          class="form-control"
+          name="assetSelect"
+          placeholder="Ex: 1"
+          ng-model="ticket.number"
+        />
+        <input
+          id="transferSubmit"
+          type="submit"
+          value="Change"
+          class="btn btn-primary"
+          ng-click="buyTicketFromSupplier()"
+        />
+        
+      </div>
+      <div class="form-group">
+        <h2>Query a Specific Ticket</h2>
+        <br />
         <h5 style="color: red; margin-bottom: 2%;" id="error_query">
           Error: Please enter a valid Ticket Id
         </h5>
@@ -202,9 +252,9 @@
           <td>{{get_ticket.eventId}}</td>
         </tr>
       </table>
-<br>
-<br>
-<br>
+      <br />
+      <br />
+      <br />
       <div class="form-group">
         <h2>Create Event</h2>
         <h5 style="color: green; margin-bottom: 2%;" id="success_create">
@@ -251,38 +301,10 @@
         />
       </div>
 
-      <div class="form-group">
-        <label>Change Tuna Holder</label><br />
-        <h5 style="color: green; margin-bottom: 2%;" id="success_holder">
-          Success! Tx ID: {{change_holder}}
-        </h5>
-        <h5 style="color: red; margin-bottom: 2%;" id="error_holder">
-          Error: Please enter a valid Tuna Id
-        </h5>
-        Enter a catch id between 1 and 10:
-        <input
-          class="form-control"
-          name="assetSelect"
-          placeholder="Ex: 1"
-          ng-model="holder.id"
-        />
-        Enter name of new holder:
-        <input
-          class="form-control"
-          name="assetSelect"
-          placeholder="Ex: Barry"
-          ng-model="holder.name"
-        />
-        <input
-          id="transferSubmit"
-          type="submit"
-          value="Change"
-          class="btn btn-primary"
-          ng-click="changeHolder()"
-        />
-      </div>
+     
     </div>
   </body>
   <!-- requiring the angular page -->
   <script type="text/javascript" src="app.js"></script>
+ 
 </html>
