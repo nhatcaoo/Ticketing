@@ -48,10 +48,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 	info := Info{Number: 5}
 	infoAsBytes, _ := json.Marshal(info)
-	err = APIstub.PutState("NUM", infoAsBytes)
-	if err != nil {
-		return shim.Error(fmt.Sprintf("Failed to add num: "))
-	}
+	APIstub.PutState("NUM", infoAsBytes)
+
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
