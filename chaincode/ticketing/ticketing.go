@@ -108,6 +108,8 @@ func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Respon
 }
 func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	//arg: event ID : "EVENT"+strconv.Itoa(i)
+
+	logger.Infof(args[0])
 	thisEventAsBytes, _ := APIstub.GetState(args[0])
 	var thisEvent = Event{}
 	json.Unmarshal(thisEventAsBytes, &thisEvent)
@@ -135,6 +137,7 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 			APIstub.PutState(args[0], eventAsBytes)
 			thisTicketAsBytes, _ = json.Marshal(thisTicket)
 			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
+			logger.Infof("--\n")
 		}
 	}
 	return shim.Success(nil)
