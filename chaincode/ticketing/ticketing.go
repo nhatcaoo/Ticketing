@@ -113,10 +113,9 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 	json.Unmarshal(thisEventAsBytes, &thisEvent)
 	var left = thisEvent.Total - thisEvent.Sold
 	num, _ := strconv.Atoi(args[1])
-	fmt.Printf(strconv.Itoa(num))
-	fmt.Printf((args[0]))
+
 	if num > left {
-		return shim.Error("Incorrect number of tickets. Expecting")
+		return shim.Error("Incorrect number of tickets.")
 	} else {
 		//ticketSet := []Ticket{}
 		for i := 0; i < num; i++ {
@@ -130,11 +129,11 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 			thisTicket.CurrentOwner = args[2]
 			thisTicket.OnSell = false
 			thisTicket.TimeStamp = time.Now() //timestamp
+			thisTicketAsBytes, _ = json.Marshal(thisTicket)
+			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
 			event.Sold++
 			eventAsBytes, _ = json.Marshal(event)
 			APIstub.PutState(args[0], eventAsBytes)
-			thisTicketAsBytes, _ = json.Marshal(thisTicket)
-			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
 			logger.Infof("--\n")
 		}
 	}
