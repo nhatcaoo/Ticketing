@@ -38,9 +38,7 @@ app.controller("appController", function ($scope, appFactory) {
         array.push(data[i].Record);
       }
       console.log("a");
-      array.sort(function (a, b) {
-        return parseFloat(a.Key) - parseFloat(b.Key);
-      });
+     
       $scope.all_ticket = array;
     });
   };
