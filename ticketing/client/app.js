@@ -38,7 +38,9 @@ app.controller("appController", function ($scope, appFactory) {
         array.push(data[i].Record);
       }
       console.log("a");
-     
+      array.sort(function (a, b) {
+        return parseFloat(a.Key) - parseFloat(b.Key);
+      });
       $scope.all_ticket = array;
     });
   };
@@ -113,7 +115,7 @@ app.factory("appFactory", function ($http) {
   };
 
   factory.buyTicketFromSupplier = function (data, callback) {
-    var holder = data.id + "_" + data.number + "_" + data.name;
+    var holder = "EVENT"+data.id + "_" + data.number + "_" + data.owner;
 
     $http.get("/buy_ticket_from_supplier/" + holder).success(function (output) {
       callback(output);

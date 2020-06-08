@@ -120,6 +120,7 @@
       </table>
       <br />
       <br />
+      <hr style="height:1px ;border-width:0;color:gray;background-color:gray">
       <br />
       <div class="form-group">
         <h2>Show all Ticket Information</h2>
@@ -173,16 +174,17 @@
       </table>
       <br />
       <br />
+      <hr style="height:1px ;border-width:0;color:gray;background-color:gray">
       <br />
       <div class="form-group">
-        <label>Change Ticket Holder</label><br />
+        <h2>Buy Ticket From Supplier</h2><br />
         <h5 style="color: green; margin-bottom: 2%;" id="success_holder">
           Success! Tx ID: {{change_holder}}
         </h5>
         <h5 style="color: red; margin-bottom: 2%;" id="error_holder">
-          Error: Please enter a valid Tuna Id
+          Error: Please enter a valid EVENT Id
         </h5>
-        Enter a ticket id: 
+        Enter event id: 
         <input
           id = "ticketID"
           class="form-control"
@@ -190,7 +192,7 @@
           placeholder="Ex: 1"
           ng-model="holder.id"
         />
-        Enter name of new holder:
+        Enter holder:
         <input
           class="form-control"
           name="assetSelect"
@@ -213,6 +215,10 @@
         />
         
       </div>
+      <br />
+      <br />
+      <hr style="height:1px ;border-width:0;color:gray;background-color:gray">
+      <br />
       <div class="form-group">
         <h2>Query a Specific Ticket</h2>
         <br />
@@ -254,6 +260,7 @@
       </table>
       <br />
       <br />
+      <hr style="height:1px ;border-width:0;color:gray;background-color:gray">
       <br />
       <div class="form-group">
         <h2>Create Event</h2>
