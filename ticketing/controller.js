@@ -366,23 +366,18 @@ module.exports = (function () {
           console.error("Failed to invoke successfully :: " + err);
         });
     },
-
     buy_ticket_from_supplier: function (req, res) {
       console.log("Change current owner of a ticket: ");
 
-      var Fabric_Client = require("fabric-client");
-      var path = require("path");
-      var util = require("util");
-      var os = require("os");
-
       var array = req.params.holder.split("_");
       console.log(array);
-     
+
       var key = array[0];
       var number = array[1];
       var owner = array[2];
-
+      
       var fabric_client = new Fabric_Client();
+
       var channel = fabric_client.newChannel("mychannel");
       var peer = fabric_client.newPeer("grpc://localhost:7051");
       channel.addPeer(peer);
@@ -401,10 +396,9 @@ module.exports = (function () {
           var crypto_store = Fabric_Client.newCryptoKeyStore({
             path: store_path,
           });
-          console.log("crypto_suite", crypto_suite)
-          crypto_suite.setCryptoSuite(crypto_store);
-          console.log("crypto_suite", crypto_suite)
+          crypto_suite.setCryptoKeyStore(crypto_store);
           fabric_client.setCryptoSuite(crypto_suite);
+
           return fabric_client.getUserContext("user1", true);
         })
         .then((user_from_store) => {
@@ -412,18 +406,19 @@ module.exports = (function () {
             console.log("Successfully loaded user1 from persistence");
             member_user = user_from_store;
           } else {
-            throw new Error("Failed to get user 1.");
+            throw new Error("Failed to get user1.... run registerUser.js");
           }
+
           tx_id = fabric_client.newTransactionID();
           console.log("Assigning transaction_id: ", tx_id._transaction_id);
-          var request = {
-            //targets : --- letting this default to the peers assigned to the channel
+          const request = {
             chaincodeId: "ticketing",
             fcn: "buyTicketFromSupplier",
             args: [key, number, owner],
             chainId: "mychannel",
             txId: tx_id,
           };
+
           return channel.sendTransactionProposal(request);
         })
         .then((results) => {
@@ -440,7 +435,6 @@ module.exports = (function () {
           } else {
             console.error("Transaction proposal was bad");
           }
-
           if (isProposalGood) {
             console.log(
               util.format(
@@ -449,21 +443,25 @@ module.exports = (function () {
                 proposalResponses[0].response.message
               )
             );
+
             var request = {
               proposalResponses: proposalResponses,
               proposal: proposal,
             };
-            var transaction_id_string = tx_id.getTransactionID();
+
+            var transaction_id_string = tx_id.getTransactionID(); //Get the transaction ID string to be used by the event processing
             var promises = [];
+
             var sendPromise = channel.sendTransaction(request);
-            promises.push(sendPromise);
+            promises.push(sendPromise); //we want the send transaction first, so that we know where to check status
+
             let event_hub = fabric_client.newEventHub();
             event_hub.setPeerAddr("grpc://localhost:7053");
 
             let txPromise = new Promise((resolve, reject) => {
               let handle = setTimeout(() => {
                 event_hub.disconnect();
-                resolve({ event_status: "TIMEOUT" });
+                resolve({ event_status: "TIMEOUT" }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
               }, 3000);
               event_hub.connect();
               event_hub.registerTxEvent(
@@ -491,11 +489,15 @@ module.exports = (function () {
                   }
                 },
                 (err) => {
-                  reject(new Error("Problem with eventhub"));
+                  reject(
+                    new Error("There was a problem with the eventhub ::" + err)
+                  );
                 }
               );
             });
-            promises.push(txtPromise);
+            promises.push(txPromise);
+
+            return Promise.all(promises);
           } else {
             console.error(
               "Failed to send Proposal or receive valid response. Response null or status is not 200. exiting..."
@@ -509,9 +511,10 @@ module.exports = (function () {
           console.log(
             "Send transaction promise and event listener promise have completed"
           );
+          // check the results in the order the promises were added to the promise all list
           if (results && results[0] && results[0].status === "SUCCESS") {
             console.log("Successfully sent transaction to the orderer.");
-            res.json(tx_id.getTransactionID());
+            res.send(tx_id.getTransactionID());
           } else {
             console.error(
               "Failed to order the transaction. Error code: " + response.status
@@ -522,7 +525,7 @@ module.exports = (function () {
             console.log(
               "Successfully committed the change to the ledger by the peer"
             );
-            res.json(tx_id.getTransactionID());
+            res.send(tx_id.getTransactionID());
           } else {
             console.log(
               "Transaction failed to be committed to the ledger due to ::" +
@@ -531,9 +534,11 @@ module.exports = (function () {
           }
         })
         .catch((err) => {
-          console.error("Failed to invoke :" + err);
+          console.error("Failed to invoke successfully :: " + err);
         });
     },
+
+  
     createEvent: function (req, res) {
       console.log("Create new Event ");
 
