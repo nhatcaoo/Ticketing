@@ -134,7 +134,7 @@ func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterfac
 			event.Sold++
 			eventAsBytes, _ = json.Marshal(event)
 			APIstub.PutState(args[0], eventAsBytes)
-			logger.Infof("--\n")
+
 		}
 	}
 	return shim.Success(nil)

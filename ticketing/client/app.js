@@ -115,7 +115,7 @@ app.factory("appFactory", function ($http) {
   };
 
   factory.buyTicketFromSupplier = function (data, callback) {
-    var holder = "EVENT"+data.id + "_" + data.number + "_" + data.owner;
+    var holder = "EVENT"+data.id + "_" + "1" + "_" + data.name;
 
     $http.get("/buy_ticket_from_supplier/" + holder).success(function (output) {
       callback(output);
