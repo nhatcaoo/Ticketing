@@ -401,7 +401,9 @@ module.exports = (function () {
           var crypto_store = Fabric_Client.newCryptoKeyStore({
             path: store_path,
           });
+          console.log(crypto_suite)
           crypto_suite.setCryptoSuite(crypto_store);
+          console.log(crypto_suite)
           fabric_client.setCryptoSuite(crypto_suite);
           return fabric_client.getUserContext("user1", true);
         })
@@ -565,8 +567,11 @@ module.exports = (function () {
           var crypto_store = Fabric_Client.newCryptoKeyStore({
             path: store_path,
           });
+          console.log(crypto_suite)
           crypto_suite.setCryptoSuite(crypto_store);
+          console.log(crypto_suite)
           fabric_client.setCryptoSuite(crypto_suite);
+          console.log(fabric_client)
           return fabric_client.getUserContext("user1", true);
         })
         .then((user_from_store) => {
