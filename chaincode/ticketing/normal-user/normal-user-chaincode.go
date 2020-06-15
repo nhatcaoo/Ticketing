@@ -15,27 +15,31 @@ import (
 
 type SmartContract struct {
 }
-type Event struct {
-	ID        int    `json:"id"`
-	Issuer    string `json:"issuer"`
-	Price     string `json:"price"`
-	EventName string `json:"eventName"`
-	Total     int    `json:"total"`
-	Sold      int    `json:"sold"`
-}
+
 type Ticket struct {
 	EventId      int       `json:"eventId"`
 	TicketId     string    `json:"ticketId"`
 	Cost         string    `json:"cost"`
 	CurrentOwner string    `json:"currentOwner"`
-	OnSell       bool      `json:"onSell"`
+	Status		 string	   `json:"status"`
 	TimeStamp    time.Time `json:"timeStamp"`
-	IsRedeemed   bool      `json:"isRedeemed"`
+	Key	string	`json:"key"`
 }
-type Info struct {
-	Number int `json:"number"`
-}
-
+var iv = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}                                                                                                                             
+                                                                                                                                                                                                            
+func encodeBase64(b []byte) string {                                                                                                                                                                        
+    return base64.StdEncoding.EncodeToString(b)                                                                                                                                                             
+}  
+func Encrypt(key, text string) string {                                                                                                                                                                     
+    fmt.Println(text)                                                                                                                                                                                       
+    block, err := aes.NewCipher([]byte(key))                                                                                                                                                                
+    if err != nil { panic(err) }                                                                                                                                                                            
+    plaintext := []byte(text)                                                                                                                                                                               
+    cfb := cipher.NewCFBEncrypter(block, iv)                                                                                                                                                                
+    ciphertext := make([]byte, len(plaintext))                                                                                                                                                              
+    cfb.XORKeyStream(ciphertext, plaintext)                                                                                                                                                                
+    return encodeBase64(ciphertext)                                                                                                                                                                         
+}     
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
@@ -53,125 +57,62 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	logger.Infof("Invoke is running " + function)
 	if function == "queryTicket" {
 		return s.queryTicket(APIstub, args)
-	} else if function == "initEvent" {
-		logger.Infof("through init Event")
-		return s.initEvent(APIstub)
 	} else if function == "buyTicketFromSupplier" {
 		return s.buyTicketFromSupplier(APIstub, args)
 	} else if function == "buyTicketFromFromSecondaryMarket" {
 		return s.buyTicketFromFromSecondaryMarket(APIstub, args)
 	} else if function == "queryAllTicket" {
 		return s.queryAllTicket(APIstub, args)
-	} else if function == "queryAllEvent" {
-		return s.queryAllEvent(APIstub)
-	} else if function == "createEvent" {
-		return s.createEvent(APIstub, args)
 	} else if function == "upTicketToSecondaryMarket" {
 		return s.upTicketToSecondaryMarket(APIstub, args)
 	} else if function == "removeTicketFromSecondaryMarket" {
 		return s.removeTicketFromSecondaryMarket(APIstub, args)
 	} else if function == "redeemTicket" {
 		return s.redeemTicket(APIstub, args)
-	} else if function == "checkoutTicket" {
-		return s.checkoutTicket(APIstub, args)
 	}
 	return shim.Error("Wrong function name.")
 }
-func (s *SmartContract) initEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
-	logger.Infof("done1 ")
 
-	events := []Event{
-		Event{ID: 0, Issuer: "VFF", Price: "220.000", EventName: "Suzuki cup", Total: 20, Sold: 0},
-		Event{ID: 1, Issuer: "BFF", Price: "220.000", EventName: "B cup", Total: 20, Sold: 0},
-		Event{ID: 2, Issuer: "CFF", Price: "220.000", EventName: "C cup", Total: 20, Sold: 0},
-		Event{ID: 3, Issuer: "DFF", Price: "220.000", EventName: "D cup", Total: 20, Sold: 0},
-		Event{ID: 4, Issuer: "EFF", Price: "220.000", EventName: "F cup", Total: 20, Sold: 0}}
-	logger.Infof("done2 ")
-
-	for j := 0; j < 5; j++ {
-		eventAsBytes, _ := json.Marshal(events[j])
-		APIstub.PutState("EVENT"+strconv.Itoa(events[j].ID), eventAsBytes)
-		for i := 0; i < events[j].Total; i++ {
-
-			var ticket = Ticket{EventId: events[j].ID, TicketId: strconv.Itoa(events[j].ID) + "-" + strconv.Itoa(i), Cost: events[j].Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
-			ticketAsBytes, _ := json.Marshal(ticket)
-			APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
-			logger.Infof(ticket.TicketId)
-		}
-		logger.Infof("-\n ")
-	}
-	logger.Infof("done1 ")
-	logger.Infof("done1 ")
-	return shim.Success(nil)
-}
 func (s *SmartContract) buyTicketFromSupplier(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	//arg: event ID : "EVENT"+strconv.Itoa(i)
-
-	logger.Infof(args[0])
-	thisEventAsBytes, _ := APIstub.GetState(args[0])
-	var thisEvent = Event{}
-	json.Unmarshal(thisEventAsBytes, &thisEvent)
+	//0: eventID, 1: number, 2: current owner, 3: redeemed time, 4: total, 5: sold, 6 cost
+	redeemedTime, _ := time.Parse(time.RFC3339, args[3])
+	if redeemedTime.Before(time.Now())
+	{
+		return shim.Error("Redeemed dated exceeded")
+	}
+	total := strconv.Atoi(args[4])
+	sold := strconv.Atoi(args[5])
 	var left = thisEvent.Total - thisEvent.Sold
 	num, _ := strconv.Atoi(args[1])
-
+	count := 0
 	if num > left {
 		return shim.Error("Incorrect number of tickets.")
 	} else {
-		//ticketSet := []Ticket{}
 		for i := 0; i < num; i++ {
 			fmt.Printf("buy ticket - \n")
-			eventAsBytes, _ := APIstub.GetState(args[0])
-			var event = Event{}
-			json.Unmarshal(eventAsBytes, &event)
-			thisTicketAsBytes, _ := APIstub.GetState("TICKET" + strconv.Itoa(event.ID) + "-" + strconv.Itoa(event.Sold))
-			var thisTicket = Ticket{}
-			json.Unmarshal(thisTicketAsBytes, &thisTicket)
-			thisTicket.CurrentOwner = args[2]
-			thisTicket.OnSell = false
-			thisTicket.TimeStamp = time.Now() //timestamp
+			var thisTicket = Ticket{EventId:args[0],TicketId: args[0] + "-" + sold, Cost: args[6], CurrentOwner: args[2], Status: "locked", TimeStamp: time.Now(), Key: ""}		
 			thisTicketAsBytes, _ = json.Marshal(thisTicket)
-			APIstub.PutState("TICKET"+strconv.Itoa(event.ID)+"-"+strconv.Itoa(event.Sold), thisTicketAsBytes)
-			event.Sold++
-			eventAsBytes, _ = json.Marshal(event)
-			APIstub.PutState(args[0], eventAsBytes)
-
+			APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
+			count++;
 		}
 	}
-	return shim.Success(nil)
+	return shim.Success(count)
 }
-func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-
-	numberAsBytes, _ := APIstub.GetState("NUM")
-	str := string(numberAsBytes)
-	logger.Infof("number as byte:" + str)
-	fmt.Printf("number as byte:" + str)
-	if numberAsBytes == nil {
-		return shim.Error("Could not locate number of events")
+func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	fmt.Printf(args[0])
+	thisTicketAsBytes, _ := APIstub.GetState(args[0])
+	var thisTicket = Ticket{}
+	json.Unmarshal(thisTicketAsBytes, &thisTicket)
+	if thisTicket.Status == "locked" {
+		return shim.Error("Ticket is not on selling")
 	}
-	info := Info{}
-
-	json.Unmarshal(numberAsBytes, &info)
-
-	fmt.Printf(strconv.Itoa(info.Number))
-	total, _ := strconv.Atoi(args[3])
-	var event = Event{ID: info.Number, Issuer: args[0], Price: args[1], EventName: args[2], Total: total, Sold: 0}
-	eventAsBytes, _ := json.Marshal(event)
-	APIstub.PutState("EVENT"+strconv.Itoa(event.ID), eventAsBytes)
-	for i := 0; i < event.Total; i++ {
-		var ticket = Ticket{EventId: event.ID, TicketId: strconv.Itoa(info.Number) + "-" + strconv.Itoa(i), Cost: event.Price, CurrentOwner: "N/A", OnSell: true, TimeStamp: time.Now(), IsRedeemed: false}
-		ticketAsBytes, _ := json.Marshal(ticket)
-		APIstub.PutState("TICKET"+ticket.TicketId, ticketAsBytes)
-		logger.Infof(ticket.TicketId)
+	if thisTicket.Status == "redeemed" {
+		return shim.Error("Ticket is not available to buy")
 	}
-
-	info.Number++
-	logger.Infof(strconv.Itoa(info.Number))
-	fmt.Printf(strconv.Itoa(info.Number))
-	numberAsBytes, _ = json.Marshal(info)
-	err := APIstub.PutState("NUM", numberAsBytes)
-	if err != nil {
-		return shim.Error(fmt.Sprintf("Failed to add num: "))
-	}
+	thisTicket.CurrentOwner = args[1]
+	thisTicketAsBytes, _ = json.Marshal(thisTicket)
+	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
 }
 func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -180,7 +121,13 @@ func (s *SmartContract) upTicketToSecondaryMarket(APIstub shim.ChaincodeStubInte
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
-	thisTicket.OnSell = true
+	if thisTicket.Status == "trading" {
+		return shim.Error("This ticket has already putted on secondary market !")
+	}
+	if thisTicket.Status == "redeemed" {
+		return shim.Error("Ticket is not available to sell !")
+	}
+	thisTicket.Status = "trading"
 	thisTicketAsBytes, _ = json.Marshal(thisTicket)
 	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
@@ -190,10 +137,15 @@ func (s *SmartContract) removeTicketFromSecondaryMarket(APIstub shim.ChaincodeSt
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
 	var thisTicket = Ticket{}
 	json.Unmarshal(thisTicketAsBytes, &thisTicket)
-	if thisTicket.OnSell == true {
-		return shim.Error("This ticket has already been sold!")
+
+	if thisTicket.Status == "trading" {
+		return shim.Error("This ticket has already putted on secondary market !")
 	}
-	thisTicket.OnSell = false
+	if thisTicket.Status == "redeemed" {
+		return shim.Error("Ticket is not available to sell !")
+	}
+
+	thisTicket.Status = "locked"
 	thisTicketAsBytes, _ = json.Marshal(thisTicket)
 	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
@@ -212,19 +164,7 @@ func (s *SmartContract) redeemTicket(APIstub shim.ChaincodeStubInterface, args [
 	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
 	return shim.Success(nil)
 }
-func (s *SmartContract) buyTicketFromFromSecondaryMarket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	fmt.Printf(args[0])
-	thisTicketAsBytes, _ := APIstub.GetState(args[0])
-	var thisTicket = Ticket{}
-	json.Unmarshal(thisTicketAsBytes, &thisTicket)
-	if thisTicket.OnSell == false {
-		return shim.Error("Ticket is not on selling")
-	}
-	thisTicket.CurrentOwner = args[1]
-	thisTicketAsBytes, _ = json.Marshal(thisTicket)
-	APIstub.PutState("TICKET"+thisTicket.TicketId, thisTicketAsBytes)
-	return shim.Success(nil)
-}
+
 func (s *SmartContract) checkoutTicket(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	fmt.Printf(args[0])
 	thisTicketAsBytes, _ := APIstub.GetState(args[0])
@@ -292,40 +232,7 @@ func (s *SmartContract) queryAllTicket(APIstub shim.ChaincodeStubInterface, args
 	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
 	return shim.Success(buffer.Bytes())
 }
-func (s *SmartContract) queryAllEvent(APIstub shim.ChaincodeStubInterface) sc.Response {
-	//var id = args[0]
-	var queryString = "{\r\n\"selector\":{\r\n\"total\":{\r\n \"$gt\":0\r\n}\r\n}\r\n}"
-	resultsIterator, err := APIstub.GetQueryResult(queryString)
-	defer resultsIterator.Close()
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
-	bArrayMemberAlreadyWritten := false
-	for resultsIterator.HasNext() {
-		queryResponse,
-			err := resultsIterator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
-		}
-		buffer.WriteString("{\"Key\":")
-		buffer.WriteString("\"")
-		buffer.WriteString(queryResponse.Key)
-		buffer.WriteString("\"")
-		buffer.WriteString(", \"Record\":")
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(queryResponse.Value))
-		buffer.WriteString("}")
-		bArrayMemberAlreadyWritten = true
-	}
-	buffer.WriteString("]")
-	fmt.Printf("- getQueryResultForQueryString queryResult:\n%s\n", buffer.String())
-	return shim.Success(buffer.Bytes())
-}
+
 
 func main() {
 
