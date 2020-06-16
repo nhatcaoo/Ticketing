@@ -93,9 +93,9 @@ services:
           - CORE_PEER_ID=peer0.org2.example.com
           - CORE_LOGGING_PEER=debug
           - CORE_CHAINCODE_LOGGING_LEVEL=DEBUG
-          - CORE_PEER_LOCALMSPID=Org1MSP
+          - CORE_PEER_LOCALMSPID=Org2MSP
           - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
-          - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+          - CORE_PEER_ADDRESS=peer0.org2.example.com:7051
           # # the following setting starts chaincode containers on the same
           # # bridge network as the peers
           # # https://docs.docker.com/compose/networking/
@@ -115,8 +115,8 @@ services:
           - 8053:7053
         volumes:
             - /var/run/:/host/var/run/
-            - ./crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/msp/peer
-            - ./crypto-config/peerOrganizations/org1.example.com/users:/etc/hyperledger/msp/users
+            - ./crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp:/etc/hyperledger/msp/peer
+            - ./crypto-config/peerOrganizations/org2.example.com/users:/etc/hyperledger/msp/users
             - ./config:/etc/hyperledger/configtx
         depends_on:
           - orderer.example.com
