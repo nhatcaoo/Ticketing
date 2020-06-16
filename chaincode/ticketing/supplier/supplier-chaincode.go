@@ -86,7 +86,6 @@ func (s *SmartContract) createEvent(APIstub shim.ChaincodeStubInterface, args []
 	info := Info{}
 
 	json.Unmarshal(numberAsBytes, &info)
-
 	fmt.Printf(strconv.Itoa(info.Number))
 	total, _ := strconv.Atoi(args[3])
 	createdTime, _ := time.Parse(time.RFC3339, args[4])

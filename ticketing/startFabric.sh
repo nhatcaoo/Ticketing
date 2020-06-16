@@ -25,12 +25,19 @@ printf "\nCalled start.sh\n\n"
 # and prime the ledger with our 10 tuna catches
 docker-compose -f ./docker-compose.yml up -d cli
 printf "\ncli started\n\n"
-docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode install -n ticketing -v 1.4 -p github.com/ticketing
+docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode install -n supplier -v 2.0 -p github.com/supplier
 printf "\nChaincode installed\n\n"
-docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n ticketing -v 1.4 -c '{"Args":[""]}' -P "OR ('Org1MSP.member','Org2MSP.member')"
+docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode instantiate -o orderer.example.com:7050 -C ChannelOne -n supplier -v 2.0 -c '{"Args":[""]}' -P "OR ('Org1MSP.member','Org2MSP.member')"
 printf "\nchaincode instantiated\n\n"
+
+
+docker exec -e "CORE_PEER_LOCALMSPID=Org2MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp" cli peer chaincode install -n normal-user -v 2.0 -p github.com/normal-user
+printf "\nChaincode installed\n\n"
+docker exec -e "CORE_PEER_LOCALMSPID=Org2MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp" cli peer chaincode instantiate -o orderer.example.com:7050 -C ChannelTwo -n normal-user -v 2.0 -c '{"Args":[""]}' -P "OR ('Org1MSP.member','Org2MSP.member')"
+printf "\nchaincode instantiated\n\n"
+
 sleep 100
-docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode invoke -o orderer.example.com:7050 -C mychannel -n ticketing -c '{"function":"initEvent","Args":[""]}'
+docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" cli peer chaincode invoke -o orderer.example.com:7050 -C ChannelOne -n supplier -c '{"function":"initEvent","Args":[""]}'
 printf "\nchaincode invoked\n\n"
 
 printf "\nTotal execution time : $(($(date +%s) - starttime)) secs ...\n\n"
