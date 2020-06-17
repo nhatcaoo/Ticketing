@@ -27,14 +27,14 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # generate channel configuration transaction
-configtxgen -profile ChannelOne -outputCreateChannelTx ./config/ChannelOne.tx -channelID ChannelOne
+configtxgen -profile ChannelOne -outputCreateChannelTx ./config/channel.tx -channelID ChannelOne
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
 fi
 
 # generate channel configuration transaction
-configtxgen -profile ChannelTwo -outputCreateChannelTx ./config/ChannelTwo.tx -channelID ChannelTwo
+configtxgen -profile ChannelTwo -outputCreateChannelTx ./config/channel.tx -channelID ChannelTwo
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
