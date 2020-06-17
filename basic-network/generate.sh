@@ -6,8 +6,8 @@
 #
 export PATH=$GOPATH/src/github.com/hyperledger/fabric/build/bin:${PWD}/../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}
-export CHANNEL_ONE=ChannelOne
-export CHANNEL_TWO=ChannelTwo
+CHANNEL_ONE=ChannelOne
+CHANNEL_TWO=ChannelTwo
 # remove previous crypto material and config transactions
 rm -fr config/*
 rm -fr crypto-config/*
@@ -27,14 +27,14 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # generate channel configuration transaction
-configtxgen -profile ChannelOne -outputCreateChannelTx ./config/channel.tx -channelID ChannelOne
+configtxgen -profile ChannelOne -outputCreateChannelTx ./config/ChannelOne.tx -channelID ChannelOne
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
 fi
 
 # generate channel configuration transaction
-configtxgen -profile ChannelTwo -outputCreateChannelTx ./config/channel.tx -channelID ChannelTwo
+configtxgen -profile ChannelTwo -outputCreateChannelTx ./config/ChannelTwo.tx -channelID ChannelTwo
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
