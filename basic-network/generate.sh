@@ -27,28 +27,28 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # generate channel configuration transaction
-configtxgen -profile ChannelOne -outputCreateChannelTx ./config/ChannelOne.tx -channelID ChannelOne
+configtxgen -profile ChannelOne -outputCreateChannelTx ./config/channelone.tx -channelID channelone
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
 fi
 
 # generate channel configuration transaction
-configtxgen -profile ChannelTwo -outputCreateChannelTx ./config/ChannelTwo.tx -channelID ChannelTwo
+configtxgen -profile ChannelTwo -outputCreateChannelTx ./config/channeltwo.tx -channelID channeltwo
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate channel configuration transaction..."
   exit 1
 fi
 
 # generate anchor peer transaction
-configtxgen -profile ChannelOne -outputAnchorPeersUpdate ./config/Org1MSPanchors.tx -channelID ChannelOne -asOrg Org1MSP
+configtxgen -profile ChannelOne -outputAnchorPeersUpdate ./config/Org1MSPanchors.tx -channelID channelone -asOrg Org1MSP
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate anchor peer update for Org1MSP..."
   exit 1
 fi
 
 # generate anchor peer transaction
-configtxgen -profile ChannelTwo -outputAnchorPeersUpdate ./config/Org2MSPanchors.tx -channelID ChannelTwo -asOrg Org2MSP
+configtxgen -profile ChannelTwo -outputAnchorPeersUpdate ./config/Org2MSPanchors.tx -channelID channeltwo -asOrg Org2MSP
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate anchor peer update for Org2MSP..."
   exit 1
