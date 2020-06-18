@@ -11,34 +11,7 @@
 #   - Different configuration profiles may be encoded here to be specified
 #   as parameters to the configtxgen tool
 #
-################################################################################
-Profiles:
-
-    OneOrgOrdererGenesis:
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *OrdererOrg
-        Consortiums:
-            SampleConsortium:
-                Organizations:
-                    - *Org1
-                    - *Org2
-                    
-    ChannelOne:
-        Consortium: SampleConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Org1
-                - *Org2
-    ChannelTwo:
-        Consortium: SampleConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Org1
-                - *Org2            
+    
 ################################################################################
 #
 #   Section: Organizations
@@ -152,3 +125,31 @@ Application: &ApplicationDefaults
     # Organizations is the list of orgs which are defined as participants on
     # the application side of the network
     Organizations:
+################################################################################
+Profiles:
+
+    OneOrgOrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *Org1
+                    - *Org2
+                    
+    ChannelOne:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2
+    ChannelTwo:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2        
