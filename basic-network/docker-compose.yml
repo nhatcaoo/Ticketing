@@ -163,4 +163,5 @@ services:
     #depends_on:
     #  - orderer.example.com
     #  - peer0.org1.example.com
+    #  - peer0.org2.example.com
     #  - couchdb
