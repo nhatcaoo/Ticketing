@@ -17,34 +17,7 @@
 #
 #   - This section defines the different organizational identities which will
 #   be referenced later in the configuration.
-#
-Profiles:
-
-    OneOrgOrdererGenesis:
-        Orderer:
-            <<: *OrdererDefaults
-            Organizations:
-                - *OrdererOrg
-        Consortiums:
-            SampleConsortium:
-                Organizations:
-                    - *Org1
-                    - *Org2
-                    
-    ChannelOne:
-        Consortium: SampleConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Org1
-                - *Org2
-    ChannelTwo:
-        Consortium: SampleConsortium
-        Application:
-            <<: *ApplicationDefaults
-            Organizations:
-                - *Org1
-                - *Org2        
+#     
 ################################################################################
 Organizations:
 
@@ -94,6 +67,15 @@ Organizations:
             - Host: peer0.org1.example.com
               Port: 7051
 ################################################################################
+Capabilities:
+    Global: &ChannelCapabilities
+        V1_1: true
+
+    Orderer: &OrdererCapabilities
+        V1_1: true
+
+    Application: &ApplicationCapabilities
+        V1_1: true
 #
 #   SECTION: Orderer
 #
@@ -152,3 +134,38 @@ Application: &ApplicationDefaults
     # the application side of the network
     Organizations:
 ################################################################################
+Profiles:
+
+    OneOrgOrdererGenesis:
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *Org1
+                    - *Org2
+                    
+    ChannelOne:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2
+            Capabilities:
+                <<: *ApplicationCapabilities
+    ChannelTwo:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2 
+            Capabilities:
+                <<: *ApplicationCapabilities
